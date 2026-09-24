@@ -41,8 +41,8 @@ cc: ## Vide le cache Symfony
 assets: ## Compile la carte des assets (vérification, AssetMapper sert à la volée en dev)
 	@$(CONSOLE) asset-map:compile
 
-worker: ## Consomme la file Messenger
-	@$(CONSOLE) messenger:consume async -vv
+worker: ## Consomme la file Messenger (e-mails) et les tâches planifiées (purge RGPD)
+	@$(CONSOLE) messenger:consume async scheduler_default -vv
 
 admin-password: ## Génère le hash du mot de passe administrateur (ADMIN_PASSWORD_HASH)
 	@$(CONSOLE) security:hash-password --empty-salt 'Symfony\Component\Security\Core\User\InMemoryUser'

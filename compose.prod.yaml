@@ -10,7 +10,8 @@
 # Reste à décider / écrire avant le premier déploiement :
 #   - stratégie de sauvegarde de la base (pg_dump quotidien, rétention,
 #     restauration testée) — le registre des dons n'est pas reconstituable ;
-#   - worker Messenger supervisé (messenger:consume async) ;
+#   - worker Messenger supervisé (messenger:consume async scheduler_default) :
+#     il envoie les e-mails ET déclenche les tâches planifiées (purge RGPD) ;
 #   - secrets (APP_SECRET, STRIPE_*, MAILER_DSN) : source et injection ;
 #   - CANONICAL_URL (hôte réel) et SITE_INDEXABLE=1 : sans elles le site
 #     reste en « Disallow: / » et les canoniques pointent vers localhost ;
