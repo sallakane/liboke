@@ -1,0 +1,80 @@
+{#
+  Gabarit de base. Reprend le rôle de html.html.twig du thème Drupal libokev2.
+
+  `page` est un App\Content\Page, absent des gabarits qui n'en ont pas
+  (pages d'erreur notamment).
+#}
+{% set page = page|default(null) %}
+{% set noindex = noindex|default(false) %}
+{% set og_image = (page and page.ogImage) ? page.ogImage : 'images/og-defaut.jpg' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}{{ page ? page.seoTitle : site.name }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ page ? page.seoDescription : '' }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ url_canonique(app.request.pathInfo) }}{% endblock %}">
+
+    {# L'en-tête X-Robots-Tag fait foi (RobotsHeaderListener) ; cette balise
+       est la ceinture en plus des bretelles. #}
+    {% if not site_indexable or noindex or (page and page.noindex) %}
+        <meta name="robots" content="noindex, nofollow">
+    {% endif %}
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:title" content="{{ block('title') }}">
+    <meta property="og:description" content="{{ block('meta_description') }}">
+    <meta property="og:url" content="{{ block('canonical') }}">
+    <meta property="og:image" content="{{ url_canonique(asset(og_image)) }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ block('title') }}">
+    <meta name="twitter:description" content="{{ block('meta_description') }}">
+    <meta name="twitter:image" content="{{ url_canonique(asset(og_image)) }}">
+    {% block opengraph %}{% endblock %}
+
+    <meta name="theme-color" content="#006952">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+
+    {# Police principale préchargée : elle porte tout le texte de la page. #}
+    <link rel="preload" href="{{ asset('fonts/saira-semi-condensed-400.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+    {% block stylesheets %}{% endblock %}
+
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+
+    {% block json_ld %}
+        {% if page %}
+            <script type="application/ld+json">{{ json_ld_fil_ariane(page) }}</script>
+        {% endif %}
+    {% endblock %}
+
+    {# Rechargement à chaud FrankenPHP : développement uniquement, jamais servi en prod. #}
+    {% set frankenphp_hot_reload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
+    {% if frankenphp_hot_reload %}
+        <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
+        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
+        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+    {% endif %}
+</head>
+<body>
+    <a class="lien-evitement" href="#contenu">Aller au contenu principal</a>
+
+    {% block header %}{% include 'layout/_header.html.twig' %}{% endblock %}
+
+    {# Le thème n'affiche le bandeau de photos que hors page d'accueil. #}
+    {% block bandeau %}{% include 'layout/_bandeau.html.twig' %}{% endblock %}
+
+    <main id="contenu">
+        {% block body %}{% endblock %}
+    </main>
+
+    {% block footer %}{% include 'layout/_footer.html.twig' %}{% endblock %}
+</body>
+</html>

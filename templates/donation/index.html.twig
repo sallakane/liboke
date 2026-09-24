@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <article class="page">
+        {% include 'components/_fil_ariane.html.twig' %}
+
+        <h1>{{ page.title }}</h1>
+
+        <div class="page__contenu">
+            {{ page.html|raw }}
+        </div>
+
+        {% for message in app.flashes('erreur') %}
+            <p class="alerte alerte--erreur" role="alert">{{ message }}</p>
+        {% endfor %}
+
+        {{ form_start(form, {action: path('app_donation_checkout'), attr: {class: 'formulaire formulaire--don'}}) }}
+            {% if form.vars.submitted and not form.vars.valid %}
+                <p class="alerte alerte--erreur" role="alert">
+                    Le formulaire contient des erreurs. Merci de vérifier le montant.
+                </p>
+            {% endif %}
+
+            {# Erreurs de niveau formulaire : jeton CSRF invalide, par exemple. #}
+            {{ form_errors(form) }}
+
+            {{ form_row(form.preset) }}
+            {{ form_row(form.custom) }}
+
+            <button type="submit" class="bouton">Faire un don</button>
+
+            <p class="mention-paiement">
+                Le paiement est traité par Stripe sur une page sécurisée.
+                Aucune donnée bancaire n'est conservée par l'association.
+            </p>
+        {{ form_end(form) }}
+    </article>
+{% endblock %}

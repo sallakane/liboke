@@ -1,0 +1,51 @@
+{#
+  Gabarit de formulaire du site.
+
+  Objectif : chaque champ porte un <label> lié, et son message d'erreur est
+  rattaché par aria-describedby avec aria-invalid (CLAUDE.md §8).
+#}
+
+{% block form_row %}
+    {%- set attr = attr|merge(valid ? {} : {'aria-invalid': 'true', 'aria-describedby': id ~ '_erreur'}) -%}
+    <div class="champ{{ valid ? '' : ' champ--erreur' }}">
+        {{- form_label(form, null, {label_attr: {class: 'champ__label'}}) -}}
+        {{- form_widget(form, {attr: attr}) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock form_row %}
+
+{#
+  Un groupe de boutons radio doit être annoncé comme tel : <fieldset> et
+  <legend>, pas un <label> sans cible. Sans cela, un lecteur d'écran lit les
+  options sans jamais énoncer la question.
+#}
+{% block choice_row %}
+    {%- if expanded -%}
+        <fieldset class="champ champ--choix{{ valid ? '' : ' champ--erreur' }}">
+            <legend class="champ__label">{{ label }}</legend>
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
+        </fieldset>
+    {%- else -%}
+        {{- block('form_row') -}}
+    {%- endif -%}
+{% endblock choice_row %}
+
+{% block checkbox_row %}
+    {%- set attr = attr|merge(valid ? {} : {'aria-invalid': 'true', 'aria-describedby': id ~ '_erreur'}) -%}
+    <div class="champ champ--case{{ valid ? '' : ' champ--erreur' }}">
+        <div class="champ__case">
+            {{- form_widget(form, {attr: attr}) -}}
+            {{- form_label(form, null, {label_attr: {class: 'champ__label champ__label--case'}}) -}}
+        </div>
+        {{- form_errors(form) -}}
+    </div>
+{% endblock checkbox_row %}
+
+{% block form_errors %}
+    {%- if errors|length > 0 -%}
+        <p class="champ__erreur" id="{{ id }}_erreur">
+            {%- for error in errors %}{{ error.message }}{% if not loop.last %} {% endif %}{% endfor -%}
+        </p>
+    {%- endif -%}
+{% endblock form_errors %}

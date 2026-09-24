@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+parameters:
+    # Slug du fichier content/pages qui alimente la page d'accueil.
+    app.home_slug: 'accueil'
+    # Hôte canonique : toutes les URLs absolues et les 301 en découlent.
+    app.canonical_url: '%env(CANONICAL_URL)%'
+    # Le site est-il indexable ? Piloté par variable d'environnement plutôt
+    # que par APP_ENV : une recette tourne en « prod » sans être indexée.
+    app.indexable: '%env(bool:SITE_INDEXABLE)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            bool $debug: '%kernel.debug%'
+            bool $indexable: '%app.indexable%'
+
+    App\:
+        resource: '../src/'
+        # Objets de valeur : ce ne sont pas des services.
+        exclude:
+            - '../src/Content/Page.php'
+            - '../src/Content/MenuEntry.php'
+            - '../src/Content/SiteConfig.php'
+            - '../src/Stripe/CheckoutSession.php'
+            - '../src/Stripe/DonationAmounts.php'
+            - '../src/Message/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Content\PageRepository:
+        arguments:
+            $contentDir: '%kernel.project_dir%/content/pages'
+            $homeSlug: '%app.home_slug%'
+
+    # Construit depuis content/site.yaml, exposé à Twig sous « site ».
+    App\Content\SiteConfig:
+        factory: [App\Content\SiteConfig, fromFile]
+        arguments: ['%kernel.project_dir%/content/site.yaml']
+
+    App\Seo\CanonicalUrl:
+        arguments:
+            $canonicalUrl: '%app.canonical_url%'
+
+    App\Seo\RedirectMap:
+        arguments:
+            $path: '%kernel.project_dir%/config/redirects.yaml'
+
+    # Le délai minimum de soumission est signé avec le secret applicatif.
+    App\Form\SubmissionTimer:
+        arguments:
+            $secret: '%env(APP_SECRET)%'
+
+    App\Stripe\DonationAmounts:
+        factory: [App\Stripe\DonationAmounts, fromFile]
+        arguments: ['%kernel.project_dir%/config/donations.yaml']
+
+    # Paresseux : sans clé configurée, le client Stripe lèverait une exception
+    # à la construction et rendrait la page « Nous soutenir » inaccessible.
+    Stripe\StripeClient:
+        lazy: true
+        arguments:
+            $config: '%env(STRIPE_SECRET_KEY)%'
+
+    App\Stripe\CheckoutSessionFactory: '@App\Stripe\StripeCheckoutSessionFactory'
+
+    App\Stripe\StripeCheckoutSessionFactory:
+        arguments:
+            $libelleProduit: 'Don à l''association LIBOKÉ'
+
+    App\Stripe\WebhookHandler:
+        arguments:
+            $webhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
+
+when@test:
+    services:
+        # Aucun appel réseau vers Stripe pendant les tests.
+        App\Tests\Double\FakeCheckoutSessionFactory:
+            public: true
+        App\Stripe\CheckoutSessionFactory: '@App\Tests\Double\FakeCheckoutSessionFactory'

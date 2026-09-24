@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family: Helvetica, Arial, sans-serif; color: #333;">
+    <h1 style="color: #006952; font-size: 18px;">Nouveau message depuis le site</h1>
+
+    <p><strong>Nom :</strong> {{ message.name }}</p>
+    <p><strong>Adresse e-mail :</strong> {{ message.email }}</p>
+    <p><strong>Objet :</strong> {{ message.subject }}</p>
+    <p><strong>Reçu le :</strong> {{ message.createdAt|date('d/m/Y à H:i') }}</p>
+
+    <hr style="border: 0; border-top: 1px solid #ccc;">
+
+    <p style="white-space: pre-wrap;">{{ message.message }}</p>
+
+    <hr style="border: 0; border-top: 1px solid #ccc;">
+
+    <p style="font-size: 12px; color: #666;">
+        Répondre à ce courriel écrit directement à l'expéditeur.
+        Le message est également conservé douze mois dans l'espace d'administration du site.
+    </p>
+</body>
+</html>

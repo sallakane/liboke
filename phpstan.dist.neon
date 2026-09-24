@@ -1,0 +1,17 @@
+parameters:
+    level: 9
+    paths:
+        - src/
+        - tests/
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Fichiers générés par les recettes Symfony Flex, laissés tels quels.
+        - identifier: method.unused
+          path: src/Kernel.php
+        - identifier: function.alreadyNarrowedType
+          path: tests/bootstrap.php
+        # Champs réservés au reçu fiscal (CERFA) et au don mensuel : le modèle
+        # les prévoit dès maintenant, aucun code ne les alimente encore
+        # (CLAUDE.md §10). Les retirer obligerait à une migration plus tard.
+        - identifier: property.unusedType
+          path: src/Entity/Donation.php

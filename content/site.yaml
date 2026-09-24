@@ -1,0 +1,24 @@
+# Configuration globale du site. Lue par App\Content\SiteConfig,
+# exposée à Twig sous la variable « site ».
+
+name: "Association LIBOKÉ"
+baseline: "Éducation · Environnement · Santé"
+
+contact:
+  email: "[À COMPLÉTER]"
+  telephone: "[À COMPLÉTER]"
+  adresse: "[À COMPLÉTER]"
+
+# URLs reprises telles quelles de l'ancien thème Drupal (page.html.twig).
+reseaux:
+  - { label: "Facebook",  href: "https://facebook.com/Association.LBK",                             icone: "icone_Facebook.svg" }
+  - { label: "Twitter",   href: "https://twitter.com/association_lbk",                              icone: "icone_Twitter.svg" }
+  - { label: "Instagram", href: "https://instagram.com/association_lbk",                            icone: "icone_Instagram.svg" }
+  - { label: "YouTube",   href: "https://www.youtube.com/channel/UCWaktFnfwQmfy03Nsz1yyBQ/videos",  icone: "icone_YouTube.svg" }
+
+# Le menu principal est déduit du front matter des pages (clé « menu »).
+# Le pied de page, lui, liste explicitement les pages légales.
+pied:
+  liens:
+    - { label: "Mentions légales",              href: "/mentions-legales" }
+    - { label: "Politique de confidentialité",  href: "/politique-de-confidentialite" }

@@ -1,0 +1,39 @@
+# PRODUCTION — SQUELETTE INCOMPLET.
+#
+# CLAUDE.md §12 : « à compléter ultérieurement par le développeur avant le
+# déploiement sur le VPS ». Ne pas ajouter ici de configuration VPS (reverse
+# proxy, DNS, certificats, CI/CD) sans instruction explicite.
+#
+# Usage prévu :
+#   docker compose -f compose.yaml -f compose.prod.yaml up -d
+#
+# Reste à décider / écrire avant le premier déploiement :
+#   - stratégie de sauvegarde de la base (pg_dump quotidien, rétention,
+#     restauration testée) — le registre des dons n'est pas reconstituable ;
+#   - worker Messenger supervisé (messenger:consume async) ;
+#   - secrets (APP_SECRET, STRIPE_*, MAILER_DSN) : source et injection ;
+#   - CANONICAL_URL (hôte réel) et SITE_INDEXABLE=1 : sans elles le site
+#     reste en « Disallow: / » et les canoniques pointent vers localhost ;
+#   - hôte canonique et certificats.
+
+services:
+  php:
+    build:
+      context: .
+      target: frankenphp_prod
+    environment:
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET}
+      MAILER_DSN: ${MAILER_DSN}
+      CANONICAL_URL: ${CANONICAL_URL}
+      SITE_INDEXABLE: ${SITE_INDEXABLE:-0}
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+      - target: 443
+        published: 443
+        protocol: tcp
+      - target: 443
+        published: 443
+        protocol: udp

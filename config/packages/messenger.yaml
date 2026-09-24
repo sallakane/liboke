@@ -1,0 +1,26 @@
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # Transport Doctrine : la file vit dans PostgreSQL (CLAUDE.md §2).
+            # La table messenger_messages est créée par migration (auto_setup=0).
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+
+        routing:
+            # Les e-mails partent en asynchrone : la requête HTTP ne doit pas
+            # attendre le serveur SMTP (CLAUDE.md §9).
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            # Le webhook Stripe ne doit faire qu'écrire en base et répondre :
+            # même le rendu du gabarit de remerciement sort de la requête
+            # (CLAUDE.md §10, règle 4).
+            App\Message\SendDonationThanks: async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'
+                failed: 'in-memory://'

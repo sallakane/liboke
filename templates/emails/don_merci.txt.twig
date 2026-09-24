@@ -1,0 +1,11 @@
+Merci pour votre don
+
+Bonjour{% if donation.donorName %} {{ donation.donorName }}{% endif %},
+
+Votre don de {{ montant }} {{ donation.currency }} a bien été encaissé le
+{{ donation.paidAt|date('d/m/Y à H:i') }}. Merci de votre soutien.
+
+Référence de votre don : {{ donation.id }}
+
+--
+Association LIBOKÉ — Éducation · Environnement · Santé

@@ -1,0 +1,34 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # Note that the session will be started ONLY if you read or write from it.
+    session: true
+
+    # Anti-spam du formulaire de contact (CLAUDE.md §9). Compteur en cache,
+    # jamais en base : aucune adresse IP n'est conservée durablement (§11).
+    rate_limiter:
+        contact_form:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 hour'
+
+        # Création de sessions Stripe (CLAUDE.md §10, règle 7) : chaque
+        # session en masse coûte et pollue le tableau de bord.
+        donation_checkout:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'
+
+    #esi: true
+    #fragments: true
+
+when@test:
+    framework:
+        test: true
+        # Symfony ajoute lui-même un X-Robots-Tag quand le mode debug est actif.
+        # On le désactive en test pour que l'en-tête observé vienne uniquement
+        # de RobotsHeaderListener, ce qui rend les assertions non ambiguës.
+        disallow_search_engine_index: false
+        session:
+            storage_factory_id: session.storage.factory.mock_file

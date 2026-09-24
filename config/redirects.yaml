@@ -1,0 +1,30 @@
+# Redirections 301 héritées de l'ancien site Drupal (CLAUDE.md §7).
+#
+# Seules les règles dont on est certain figurent ici. La base de l'ancien site
+# n'étant pas récupérable, les alias d'URL sont perdus : il faut une liste des
+# URLs réellement indexées (Search Console, export de crawl, archive web) pour
+# compléter ce fichier. Voir docs/theme-audit.md §11, point 8.
+#
+# Ne pas rediriger au hasard : une 301 vers une page sans rapport est traitée
+# par Google comme une soft 404 et ne transmet rien.
+
+# Correspondances exactes : ancien chemin -> nouveau chemin.
+exact:
+    # L'accueil existait sous son alias en plus de la racine.
+    /accueil: /
+
+    # À COMPLÉTER une fois les anciennes URLs récupérées, par exemple :
+    # /node/12: /nos-actions
+    # /l-association-liboke: /l-association
+
+# Correspondances par préfixe : tout ce qui commence par la clé est réécrit.
+prefixes:
+    # L'ancien site préfixait toutes ses URLs par la langue (/fr/contact, et
+    # le thème générait <a href="/{{ language }}">). Le nouveau site est
+    # monolingue : on retire le préfixe sans perdre le chemin.
+    /fr: ''
+
+# Pages supprimées sans équivalent (tunnel de commande de bons :
+# /commande/panier, /commande/identite, /commande/paiement) : volontairement
+# absentes. Elles doivent renvoyer une vraie 404, pas une redirection
+# trompeuse vers une page sans rapport.

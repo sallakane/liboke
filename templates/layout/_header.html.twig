@@ -1,0 +1,20 @@
+{#
+  En-tête fidèle au thème libokev2 (docs/theme-audit.md §6.3) :
+  bloc logo sur fond blanc à gauche, bandeau vert texturé à droite,
+  puis barre de navigation noire.
+#}
+<header class="entete-site">
+    <div class="entete">
+        <div class="entete__marque">
+            <a href="{{ path('app_home') }}" rel="home" aria-label="{{ site.name }} — retour à l'accueil">
+                <img src="{{ asset('images/logo.svg') }}" alt="{{ site.name }}" width="909" height="308">
+            </a>
+        </div>
+
+        <div class="entete__bandeau">
+            {% include 'components/_reseaux.html.twig' %}
+        </div>
+    </div>
+
+    {% include 'components/_menu.html.twig' %}
+</header>

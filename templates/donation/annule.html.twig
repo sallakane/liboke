@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Don interrompu — {{ site.name }}{% endblock %}
+{% block meta_description %}Le don n'a pas été finalisé.{% endblock %}
+
+{% block body %}
+    <article class="page">
+        <h1>Votre don n'a pas été finalisé</h1>
+
+        <div class="page__contenu">
+            <p>
+                Vous avez quitté la page de paiement avant de valider votre don.
+                Aucun montant n'a été prélevé.
+            </p>
+            <p><a class="bouton" href="{{ path('app_donation') }}">Revenir au formulaire de don</a></p>
+        </div>
+    </article>
+{% endblock %}

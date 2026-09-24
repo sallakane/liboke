@@ -1,0 +1,12 @@
+<div class="reseaux">
+    <p class="reseaux__titre" id="reseaux-titre">Suivez-nous</p>
+    <ul class="reseaux__liste" aria-labelledby="reseaux-titre">
+        {% for reseau in site.reseaux %}
+            <li>
+                <a href="{{ reseau.href }}" target="_blank" rel="noopener external">
+                    <img src="{{ asset('images/' ~ reseau.icone) }}" alt="{{ reseau.label }}" width="48" height="48" loading="lazy">
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

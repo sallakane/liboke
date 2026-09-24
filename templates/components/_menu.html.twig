@@ -1,0 +1,25 @@
+{#
+  Menu principal, construit depuis le front matter des pages (clé « menu »),
+  trié par poids. Barre noire du thème, aligné à droite sur grand écran.
+  Le repli mobile fonctionne sans JavaScript (case à cocher masquée + label),
+  conformément à l'exigence « le site fonctionne sans JS » (CLAUDE.md §2).
+#}
+{% set chemin_courant = app.request.pathInfo %}
+<nav class="navigation" aria-label="Navigation principale">
+    <input type="checkbox" id="menu-bascule" class="navigation__case">
+    <label for="menu-bascule" class="navigation__bouton">
+        <span class="navigation__barres" aria-hidden="true"></span>
+        Menu
+    </label>
+
+    <ul class="navigation__liste">
+        {% for entree in menu_principal() %}
+            {% set actif = entree.isHome ? chemin_courant == '/' : chemin_courant starts with entree.path %}
+            <li class="navigation__item">
+                <a class="navigation__lien" href="{{ entree.path }}"{% if actif %} aria-current="page"{% endif %}>
+                    {{ entree.menu.label }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

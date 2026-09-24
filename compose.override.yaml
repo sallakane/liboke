@@ -1,0 +1,59 @@
+# Développement local. Chargé automatiquement par docker compose.
+
+services:
+  php:
+    build:
+      context: .
+      target: frankenphp_dev
+    volumes:
+      - ./:/app
+      # Thème Drupal de référence, monté en LECTURE SEULE (CLAUDE.md §3).
+      # Ne jamais y écrire. Si le dossier voisin n'existe pas, commenter cette ligne.
+      - ../associationliboke.com/themes/custom/libokev2:/drupal-theme:ro
+      # var/ reste dans le conteneur : évite les soucis de permissions et de perf
+      - /app/var/
+    environment:
+      MAILER_DSN: smtp://mailer:1025
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+      # HTTPS local : certificat auto-signé généré par Caddy
+      CADDY_GLOBAL_OPTIONS: |
+        auto_https disable_redirects
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - target: 80
+        published: ${HTTP_PORT:-80}
+        protocol: tcp
+      - target: 443
+        published: ${HTTPS_PORT:-443}
+        protocol: tcp
+      - target: 443
+        published: ${HTTP3_PORT:-443}
+        protocol: udp
+    tty: true
+
+###> symfony/mailer ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+###< symfony/mailer ###
+
+  # La base n'est PAS exposée sur l'hôte (CLAUDE.md §12). Accès via `make db`.
+  database: {}
+
+  # Relais des webhooks Stripe en local. Démarré à la demande seulement :
+  #   docker compose --profile stripe up -d
+  # Nécessite STRIPE_API_KEY dans .env.local. Mis en place en phase 6.
+  stripe-cli:
+    image: stripe/stripe-cli
+    profiles: [stripe]
+    command: listen --forward-to https://php/stripe/webhook --skip-verify
+    environment:
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+    depends_on:
+      - php

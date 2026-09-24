@@ -1,0 +1,12 @@
+twig:
+    file_name_pattern: '*.twig'
+    # Gabarit de formulaire maison : libellés et messages d'erreur
+    # correctement associés aux champs (CLAUDE.md §8).
+    form_themes: ['form/fields.html.twig']
+    globals:
+        site: '@App\Content\SiteConfig'
+        site_indexable: '%app.indexable%'
+
+when@test:
+    twig:
+        strict_variables: true

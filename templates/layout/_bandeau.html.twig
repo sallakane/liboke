@@ -1,0 +1,13 @@
+{#
+  Bandeau de trois photos affiché sur les pages internes uniquement
+  (le thème Drupal le masquait sur l'accueil : {% if is_front != 1 %}).
+  Images décoratives : alt vide assumé.
+#}
+<div class="bandeau-photos" aria-hidden="true">
+    {% for n in 1..3 %}
+        <picture>
+            <source srcset="{{ asset('images/bandeau-' ~ n ~ '.webp') }}" type="image/webp">
+            <img src="{{ asset('images/bandeau-' ~ n ~ '.jpg') }}" alt="" width="422" height="238" loading="lazy" decoding="async">
+        </picture>
+    {% endfor %}
+</div>

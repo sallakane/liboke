@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable — {{ site.name }}{% endblock %}
+{% block meta_description %}La page demandée n'existe pas ou a été déplacée.{% endblock %}
+
+{% block body %}
+    <article class="page">
+        <h1>Page introuvable</h1>
+        <div class="page__contenu">
+            <p>
+                La page que vous cherchez n'existe pas, ou elle a été déplacée
+                depuis la refonte du site.
+            </p>
+            <p><a class="bouton" href="{{ path('app_home') }}">Retour à l'accueil</a></p>
+        </div>
+    </article>
+{% endblock %}

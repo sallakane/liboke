@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Merci — {{ site.name }}{% endblock %}
+{% block meta_description %}Page de confirmation après un don à l'association LIBOKÉ.{% endblock %}
+
+{% block body %}
+    <article class="page">
+        <h1>Merci pour votre soutien</h1>
+
+        <div class="page__contenu">
+            {#
+              Formulation volontairement prudente : le retour du navigateur
+              n'est pas une preuve d'encaissement. Seul le webhook fait foi
+              (CLAUDE.md §10). Ne jamais écrire ici que le paiement est confirmé.
+            #}
+            <p>
+                Votre demande de don a bien été transmise à notre prestataire de
+                paiement. Vous recevrez un courriel de confirmation dès que le
+                paiement aura été validé.
+            </p>
+            <p>
+                Votre soutien permet à l'association de poursuivre ses actions
+                sur le terrain.
+            </p>
+            <p><a class="bouton" href="{{ path('app_home') }}">Retour à l'accueil</a></p>
+        </div>
+    </article>
+{% endblock %}

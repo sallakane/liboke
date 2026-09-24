@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{# L'accueil porte l'identité de l'organisation et du site ; le fil d'Ariane
+   n'a pas de sens à la racine (CLAUDE.md §7). #}
+{% block json_ld %}
+    <script type="application/ld+json">{{ json_ld_organisation() }}</script>
+    <script type="application/ld+json">{{ json_ld_site() }}</script>
+{% endblock %}
+
+{# Le thème masque le bandeau de photos sur l'accueil. #}
+{% block bandeau %}{% endblock %}
+
+{% block body %}
+    <div class="accueil">
+        <div class="accueil__texte">
+            <h1>{{ site.name }}</h1>
+            <p class="accueil__baseline">{{ site.baseline }}</p>
+
+            <div class="accueil__corps">
+                {{ page.html|raw }}
+            </div>
+
+            <p><a class="bouton" href="/nous-soutenir">Nous soutenir</a></p>
+        </div>
+
+        <div class="accueil__visuel">
+            <picture>
+                <source srcset="{{ asset('images/accueil.webp') }}" type="image/webp">
+                <img src="{{ asset('images/accueil.jpg') }}"
+                     alt="[À COMPLÉTER] Description de la photographie d'accueil"
+                     width="1600" height="1080"
+                     fetchpriority="high" decoding="async">
+            </picture>
+        </div>
+    </div>
+{% endblock %}

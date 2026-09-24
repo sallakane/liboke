@@ -1,0 +1,721 @@
+/*
+ * Feuille de style principale — Association LIBOKÉ.
+ *
+ * Écrite en CSS moderne (Grid / Flexbox). Bootstrap 3 est abandonné :
+ * il n'était pas dans le dépôt et le thème ne l'utilisait que pour sa grille
+ * (voir docs/theme-audit.md §2 et §9).
+ *
+ * La charte (couleurs, typographie, structure d'en-tête) est relevée
+ * sur le thème Drupal libokev2 et son screenshot.png.
+ *
+ * Organisation : 1. jetons — 2. polices — 3. base — 4. en-tête — 5. navigation
+ *                6. bandeau — 7. accueil — 8. pied — 9. utilitaires
+ */
+
+/* ------------------------------------------------------------------ 1. jetons */
+
+:root {
+    /* Couleurs relevées dans css/style.css du thème */
+    --vert: #006952;
+    --vert-icone: #226b54;
+    --or: #ffc24d;
+    --or-doux: #f7c563;
+    --noir: #000;
+    --gris-separateur: #666;
+    --gris-clair: #f7f7f7;
+    --erreur: #a51b00;
+    --texte: #333;
+    --blanc: #fff;
+
+    --police: "Saira Semi Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    --esp-xs: 0.5rem;
+    --esp-s: 1rem;
+    --esp-m: 1.5rem;
+    --esp-l: 2.5rem;
+    --esp-xl: 4rem;
+
+    --largeur-contenu: 70ch;
+    --hauteur-entete: 12.5rem;
+}
+
+/* ---------------------------------------------------------------- 2. polices */
+
+@font-face {
+    font-family: "Saira Semi Condensed";
+    src: url("../fonts/saira-semi-condensed-400.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Saira Semi Condensed";
+    src: url("../fonts/saira-semi-condensed-700.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ------------------------------------------------------------------- 3. base */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    font-family: var(--police);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--texte);
+    background: var(--blanc);
+}
+
+h1,
+h2,
+h3 {
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--vert);
+    margin: 0 0 var(--esp-s);
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--vert);
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible + label {
+    outline: 3px solid var(--or);
+    outline-offset: 2px;
+}
+
+main {
+    display: block;
+}
+
+/* Un enfant de grid/flex a `min-width: auto` par défaut : son contenu peut
+   élargir la colonne au-delà du viewport. On neutralise systématiquement. */
+.entete > *,
+.accueil > *,
+.bandeau-photos > *,
+.pied__contenu > * {
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------- 4. en-tête */
+
+.entete {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.entete__marque {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--esp-s);
+    background: var(--blanc);
+}
+
+/* Le lien doit s'étirer : sans cela il se dimensionne sur la taille
+   intrinsèque du SVG (300px par défaut, faute d'attributs width/height)
+   et le `width: 100%` de l'image se résout sur cette valeur. */
+.entete__marque a {
+    display: block;
+    width: 100%;
+    max-width: min(22rem, 100%);
+}
+
+.entete__marque img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.entete__bandeau {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--esp-s);
+    background-color: var(--vert);
+    background-image: url("../images/bandeau-vert.webp");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+@media (min-width: 900px) {
+    .entete {
+        grid-template-columns: minmax(14rem, 25%) 1fr;
+        align-items: stretch;
+    }
+
+    .entete__marque {
+        min-height: var(--hauteur-entete);
+    }
+}
+
+/* Réseaux sociaux — le thème les place dans le bandeau vert */
+
+.reseaux__titre {
+    margin: 0 0 var(--esp-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--blanc);
+    text-align: center;
+}
+
+.reseaux__liste {
+    display: flex;
+    gap: var(--esp-s);
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reseaux__liste img {
+    display: block;
+    width: 3rem;
+    height: 3rem;
+}
+
+.reseaux__liste a {
+    display: block;
+    border-radius: 50%;
+}
+
+/* ------------------------------------------------------------- 5. navigation */
+
+.navigation {
+    background: var(--noir);
+    box-shadow: 0 8px 5px -5px var(--gris-separateur) inset;
+}
+
+/* Case à cocher masquée mais focalisable : sert de bascule sans JavaScript. */
+.navigation__case {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.navigation__bouton {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-xs);
+    padding: var(--esp-s) var(--esp-m);
+    color: var(--blanc);
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.navigation__barres,
+.navigation__barres::before,
+.navigation__barres::after {
+    display: block;
+    width: 1.375rem;
+    height: 2px;
+    background: currentcolor;
+    content: "";
+}
+
+.navigation__barres {
+    position: relative;
+}
+
+.navigation__barres::before {
+    position: absolute;
+    top: -7px;
+}
+
+.navigation__barres::after {
+    position: absolute;
+    top: 7px;
+}
+
+.navigation__liste {
+    display: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-direction: column;
+}
+
+.navigation__case:checked ~ .navigation__liste {
+    display: flex;
+}
+
+.navigation__lien {
+    display: block;
+    padding: 0.75rem var(--esp-m);
+    color: var(--blanc);
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.navigation__lien:hover,
+.navigation__lien:focus-visible,
+.navigation__lien[aria-current="page"] {
+    color: var(--or-doux);
+}
+
+@media (min-width: 900px) {
+    .navigation__bouton {
+        display: none;
+    }
+
+    .navigation__liste {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: var(--esp-l);
+    }
+
+    /* Séparateurs verticaux entre les entrées, comme dans le thème. */
+    .navigation__item + .navigation__item .navigation__lien {
+        border-left: 1px solid var(--gris-separateur);
+    }
+
+    .navigation__lien {
+        padding: 0.75rem 1.5em;
+        font-size: 1.25rem;
+    }
+}
+
+/* ---------------------------------------------------------------- 6. bandeau */
+
+.bandeau-photos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.bandeau-photos img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Le thème masquait ce bandeau sur les petits écrans. */
+@media (max-width: 639px) {
+    .bandeau-photos {
+        display: none;
+    }
+}
+
+/* ---------------------------------------------------------------- 7. accueil */
+
+.accueil {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.accueil__texte {
+    padding: var(--esp-l) var(--esp-m);
+}
+
+.accueil__baseline {
+    margin: 0 0 var(--esp-m);
+    color: var(--or-doux);
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 700;
+}
+
+.accueil__corps {
+    max-width: min(var(--largeur-contenu), 100%);
+    margin-bottom: var(--esp-m);
+}
+
+.accueil__visuel img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (min-width: 900px) {
+    .accueil {
+        grid-template-columns: minmax(20rem, 30%) 1fr;
+        align-items: center;
+    }
+
+    .accueil__texte {
+        padding: var(--esp-xl) var(--esp-l);
+    }
+}
+
+.bouton {
+    display: inline-block;
+    padding: 0.75rem 1.4em;
+    background: var(--noir);
+    color: var(--blanc);
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.bouton:hover,
+.bouton:focus-visible {
+    background: var(--vert);
+    color: var(--blanc);
+}
+
+/* ------------------------------------------------------- 7 bis. pages de contenu */
+
+.page {
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: var(--esp-l) var(--esp-m);
+}
+
+.fil-ariane {
+    margin-bottom: var(--esp-m);
+    font-size: 0.9375rem;
+}
+
+.fil-ariane__liste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fil-ariane__liste li + li::before {
+    margin-right: var(--esp-xs);
+    color: var(--gris-separateur);
+    content: "›";
+}
+
+.page > h1 {
+    margin-bottom: var(--esp-l);
+}
+
+.page__contenu {
+    max-width: min(var(--largeur-contenu), 100%);
+}
+
+.page__contenu h2 {
+    margin-top: var(--esp-l);
+}
+
+.page__contenu h3 {
+    margin-top: var(--esp-m);
+    font-size: 1.25rem;
+}
+
+.page__contenu ul,
+.page__contenu ol {
+    padding-left: 1.25rem;
+}
+
+.page__contenu :first-child {
+    margin-top: 0;
+}
+
+@media (min-width: 900px) {
+    .page {
+        padding: var(--esp-xl) var(--esp-l);
+    }
+}
+
+/* ----------------------------------------------------- 7 ter. formulaires */
+
+.formulaire {
+    max-width: min(38rem, 100%);
+    margin-top: var(--esp-l);
+}
+
+.champ {
+    margin-bottom: var(--esp-m);
+}
+
+.champ__label {
+    display: block;
+    margin-bottom: var(--esp-xs);
+    font-weight: 700;
+}
+
+.champ input[type="text"],
+.champ input[type="email"],
+.champ textarea {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #b3b3b3;
+    border-radius: 2px;
+    font: inherit;
+    color: inherit;
+    background: var(--blanc);
+}
+
+.champ textarea {
+    resize: vertical;
+}
+
+/* Sélecteurs d'attribut nécessaires : `.champ input[type="text"]` ci-dessus
+   est plus spécifique qu'un simple `.champ--erreur input`, qui serait ignoré. */
+.champ--erreur input[type="text"],
+.champ--erreur input[type="email"],
+.champ--erreur textarea {
+    border-color: var(--erreur);
+    border-width: 2px;
+}
+
+.champ__erreur {
+    margin: 0.375rem 0 0;
+    color: var(--erreur);
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.champ--case .champ__case {
+    display: flex;
+    gap: 0.625rem;
+    align-items: flex-start;
+}
+
+.champ--case .champ__label--case {
+    margin: 0;
+    font-weight: 400;
+}
+
+.champ--case input[type="checkbox"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: 0.25rem;
+    flex: none;
+}
+
+/* Piège à robots : hors écran, mais pas `display: none` — certains robots
+   ignorent les champs ainsi masqués. */
+.piege {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.alerte {
+    margin: var(--esp-m) 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid;
+    font-weight: 700;
+}
+
+.alerte--succes {
+    border-color: var(--vert);
+    background: #e8f3f0;
+    color: var(--vert);
+}
+
+.alerte--erreur {
+    border-color: var(--erreur);
+    background: #fbecea;
+    color: var(--erreur);
+}
+
+button.bouton {
+    border: 0;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ------------------------------------------------- 7 quater. don en ligne */
+
+/* Les montants suggérés sont des boutons radio : cliquables sans une seule
+   ligne de JavaScript (CLAUDE.md §2). */
+.champ--choix {
+    margin: 0 0 var(--esp-m);
+    padding: 0;
+    border: 0;
+}
+
+.champ--choix > legend {
+    padding: 0;
+}
+
+.champ--choix > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-xs);
+}
+
+.formulaire--don input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+.formulaire--don input[type="radio"] + label {
+    display: block;
+    padding: 0.625rem 1.25rem;
+    border: 2px solid var(--vert);
+    color: var(--vert);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.formulaire--don input[type="radio"]:checked + label {
+    background: var(--vert);
+    color: var(--blanc);
+}
+
+.formulaire--don input[type="radio"]:focus-visible + label {
+    outline: 3px solid var(--or);
+    outline-offset: 2px;
+}
+
+.formulaire--don .champ input[type="number"] {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #b3b3b3;
+    border-radius: 2px;
+    font: inherit;
+}
+
+.mention-paiement {
+    margin-top: var(--esp-m);
+    color: #555;
+    font-size: 0.9375rem;
+}
+
+/* -------------------------------------------------------------------- 8. pied */
+
+.pied {
+    margin-top: var(--esp-xl);
+    background: var(--vert);
+    color: var(--blanc);
+}
+
+.pied a {
+    color: var(--blanc);
+}
+
+.pied__contenu {
+    display: grid;
+    gap: var(--esp-l);
+    grid-template-columns: 1fr;
+    padding: var(--esp-l) var(--esp-m);
+}
+
+.pied__marque {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.pied__baseline {
+    margin: 0;
+    color: var(--or-doux);
+}
+
+.pied__titre {
+    margin: 0 0 var(--esp-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pied__bas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-s);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--esp-s) var(--esp-m);
+    border-top: 1px solid rgb(255 255 255 / 25%);
+}
+
+.pied__bas p {
+    margin: 0;
+}
+
+.pied__liens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Dans le pied, le titre « Suivez-nous » du composant fait doublon. */
+.pied .reseaux__titre {
+    display: none;
+}
+
+.pied .reseaux__liste {
+    justify-content: flex-start;
+}
+
+@media (min-width: 900px) {
+    .pied__contenu {
+        grid-template-columns: repeat(3, 1fr);
+        padding: var(--esp-l) var(--esp-l);
+    }
+}
+
+/* ------------------------------------------------------------ 9. utilitaires */
+
+/* Lien d'évitement : visible seulement au focus clavier (CLAUDE.md §8). */
+.lien-evitement {
+    position: absolute;
+    left: -9999px;
+    z-index: 100;
+    padding: var(--esp-xs) var(--esp-s);
+    background: var(--vert);
+    color: var(--blanc);
+}
+
+.lien-evitement:focus {
+    left: var(--esp-s);
+    top: var(--esp-s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

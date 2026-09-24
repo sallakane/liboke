@@ -1,0 +1,11 @@
+{#
+  Fil d'Ariane visible. Le thème Drupal le masquait en CSS
+  (`.breadcrumb { display: none }`) ; on le rétablit, il accompagne le
+  balisage BreadcrumbList (docs/theme-audit.md §8).
+#}
+<nav class="fil-ariane" aria-label="Fil d'Ariane">
+    <ol class="fil-ariane__liste">
+        <li><a href="{{ path('app_home') }}">Accueil</a></li>
+        <li><span aria-current="page">{{ page.title }}</span></li>
+    </ol>
+</nav>

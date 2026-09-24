@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family: Helvetica, Arial, sans-serif; color: #333;">
+    <h1 style="color: #006952; font-size: 18px;">Merci pour votre don</h1>
+
+    <p>Bonjour{% if donation.donorName %} {{ donation.donorName }}{% endif %},</p>
+
+    <p>
+        Votre don de <strong>{{ montant }} {{ donation.currency }}</strong> a bien été
+        encaissé le {{ donation.paidAt|date('d/m/Y à H:i') }}. Merci de votre soutien.
+    </p>
+
+    <p>
+        Référence de votre don : {{ donation.id }}
+    </p>
+
+    {#
+      Aucune mention de reçu fiscal tant que la génération du CERFA n'est pas
+      implémentée (CLAUDE.md §10). Ne rien promettre ici.
+    #}
+
+    <p style="font-size: 12px; color: #666;">
+        Association LIBOKÉ — Éducation · Environnement · Santé
+    </p>
+</body>
+</html>

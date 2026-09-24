@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <article class="page">
+        {% include 'components/_fil_ariane.html.twig' %}
+
+        <h1>{{ page.title }}</h1>
+
+        <div class="page__contenu">
+            {{ page.html|raw }}
+        </div>
+
+        {% for message in app.flashes('succes') %}
+            <p class="alerte alerte--succes" role="status">{{ message }}</p>
+        {% endfor %}
+
+        {% for message in app.flashes('erreur') %}
+            <p class="alerte alerte--erreur" role="alert">{{ message }}</p>
+        {% endfor %}
+
+        {{ form_start(form, {attr: {class: 'formulaire'}}) }}
+            {% if not form.vars.valid %}
+                <p class="alerte alerte--erreur" role="alert">
+                    Le formulaire contient des erreurs. Merci de vérifier les champs signalés.
+                </p>
+            {% endif %}
+
+            {# Erreurs de niveau formulaire : jeton CSRF invalide, par exemple. #}
+            {{ form_errors(form) }}
+
+            {{ form_row(form.name) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.subject) }}
+            {{ form_row(form.message) }}
+            {{ form_row(form.consent) }}
+
+            {# Piège à robots : hors flux, hors tabulation, hors lecteurs d'écran. #}
+            <div class="piege" aria-hidden="true">
+                <label for="{{ form.website.vars.id }}">Ne remplissez pas ce champ</label>
+                {{ form_widget(form.website) }}
+            </div>
+
+            {{ form_widget(form.ts) }}
+            {{ form_widget(form.signature) }}
+
+            <button type="submit" class="bouton">Envoyer le message</button>
+        {{ form_end(form) }}
+    </article>
+{% endblock %}

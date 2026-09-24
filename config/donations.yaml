@@ -1,0 +1,20 @@
+# Paramètres du don en ligne (CLAUDE.md §10).
+#
+# Tous les montants sont en CENTIMES, en entiers. Aucun flottant nulle part :
+# 0,1 + 0,2 ne vaut pas 0,3 en binaire, et il s'agit d'argent réel.
+
+currency: EUR
+
+# Bornes du montant libre. Le minimum tient compte du plancher de Stripe
+# (0,50 €) et du coût fixe par transaction, qui rend les micro-dons absurdes.
+minimum: 500
+# [À CONFIRMER avec le client] Au-delà, mieux vaut un virement : les frais
+# Stripe deviennent significatifs.
+maximum: 500000
+
+# Montants proposés en boutons radio, du plus courant au plus élevé.
+suggestions:
+    - 1000
+    - 2500
+    - 5000
+    - 10000

@@ -1,0 +1,42 @@
+{#
+  Page 500. Volontairement autonome : ni menu ni contenu Markdown, car la
+  panne à l'origine de l'erreur peut justement venir de la couche contenu.
+  On garde la charte, on ne garde aucune dépendance.
+#}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erreur technique — {{ site.name }}</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    {{ importmap('app') }}
+</head>
+<body>
+    <header class="entete-site">
+        <div class="entete">
+            <div class="entete__marque">
+                <a href="/" rel="home" aria-label="{{ site.name }} — retour à l'accueil">
+                    <img src="{{ asset('images/logo.svg') }}" alt="{{ site.name }}" width="909" height="308">
+                </a>
+            </div>
+            <div class="entete__bandeau"></div>
+        </div>
+        <div class="navigation"></div>
+    </header>
+
+    <main id="contenu">
+        <article class="page">
+            <h1>Une erreur technique est survenue</h1>
+            <div class="page__contenu">
+                <p>
+                    Le site rencontre un problème momentané. Merci de réessayer
+                    dans quelques instants.
+                </p>
+                <p><a class="bouton" href="/">Retour à l'accueil</a></p>
+            </div>
+        </article>
+    </main>
+</body>
+</html>

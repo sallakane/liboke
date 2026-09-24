@@ -1,0 +1,15 @@
+Nouveau message depuis le site
+
+Nom : {{ message.name }}
+Adresse e-mail : {{ message.email }}
+Objet : {{ message.subject }}
+Reçu le : {{ message.createdAt|date('d/m/Y à H:i') }}
+
+---
+
+{{ message.message }}
+
+---
+
+Répondre à ce courriel écrit directement à l'expéditeur.
+Le message est également conservé douze mois dans l'espace d'administration du site.

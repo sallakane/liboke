@@ -1,0 +1,36 @@
+{#
+  Pied de page écrit de zéro : le thème Drupal n'en fournissait aucun,
+  la région `footer` était alimentée par des blocs perdus avec la base
+  (docs/theme-audit.md §6.1). Contenu piloté par content/site.yaml.
+#}
+<footer class="pied">
+    <div class="pied__contenu">
+        <div class="pied__bloc">
+            <p class="pied__marque">{{ site.name }}</p>
+            <p class="pied__baseline">{{ site.baseline }}</p>
+        </div>
+
+        <div class="pied__bloc">
+            <p class="pied__titre">Nous contacter</p>
+            <address class="pied__adresse">
+                {{ site.contact.adresse }}<br>
+                {{ site.contact.telephone }}<br>
+                {{ site.contact.email }}
+            </address>
+        </div>
+
+        <div class="pied__bloc">
+            <p class="pied__titre">Nous suivre</p>
+            {% include 'components/_reseaux.html.twig' %}
+        </div>
+    </div>
+
+    <div class="pied__bas">
+        <p>&copy; {{ 'now'|date('Y') }} {{ site.name }}</p>
+        <ul class="pied__liens">
+            {% for lien in site.liensPied %}
+                <li><a href="{{ lien.href }}">{{ lien.label }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</footer>

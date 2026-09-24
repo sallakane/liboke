@@ -1,0 +1,13 @@
+{%- if indexable -%}
+User-agent: *
+Allow: /
+
+# Zone d'administration : jamais indexée (CLAUDE.md §10).
+Disallow: /admin
+
+Sitemap: {{ sitemap }}
+{%- else -%}
+# Site non indexable (développement ou recette).
+User-agent: *
+Disallow: /
+{%- endif %}

@@ -1,0 +1,8 @@
+when@dev: &errors
+    _errors:
+        resource: '@FrameworkBundle/Resources/config/routing/errors.php'
+        prefix: /_error
+
+# Les mêmes routes en test : sans elles, les gabarits d'erreur personnalisés
+# ne seraient jamais exercés (le mode debug affiche la page d'exception).
+when@test: *errors
