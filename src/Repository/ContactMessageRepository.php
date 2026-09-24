@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\ContactMessage;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -51,5 +52,24 @@ final class ContactMessageRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         return is_numeric($total) ? (int) $total : 0;
+    }
+
+    /**
+     * Page de la liste d'administration, du plus récent au plus ancien.
+     *
+     * @return Paginator<ContactMessage>
+     */
+    public function paginate(int $page, int $perPage): Paginator
+    {
+        $query = $this->createQueryBuilder('m')
+            ->orderBy('m.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        /** @var Paginator<ContactMessage> $page */
+        $page = new Paginator($query, fetchJoinCollection: false);
+
+        return $page;
     }
 }

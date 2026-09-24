@@ -1,0 +1,33 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Messages de contact — Administration — {{ site.name }}{% endblock %}
+
+{% block admin_body %}
+    <h1>Messages de contact</h1>
+
+    <p class="admin__note">
+        Copie des messages reçus par le formulaire, au cas où un courriel se
+        serait perdu. Supprimés automatiquement au bout de douze mois.
+    </p>
+
+    {% if messages|length == 0 %}
+        <p>Aucun message.</p>
+    {% else %}
+        <ol class="admin__messages">
+            {% for message in messages %}
+                <li>
+                    <article>
+                        <h2>{{ message.subject }}</h2>
+                        <p class="admin__meta">
+                            {{ message.createdAt|date('d/m/Y H:i') }} —
+                            {{ message.name }}, <a href="mailto:{{ message.email }}">{{ message.email }}</a>
+                        </p>
+                        <div class="admin__message">{{ message.message|nl2br }}</div>
+                    </article>
+                </li>
+            {% endfor %}
+        </ol>
+
+        {% include 'admin/_pagination.html.twig' with {route: 'app_admin_messages', parametres: {}} %}
+    {% endif %}
+{% endblock %}

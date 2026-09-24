@@ -15,4 +15,15 @@ enum DonationStatus: string
     case Refunded = 'refunded';
 
     case Failed = 'failed';
+
+    /** Libellé affiché dans l'espace d'administration et l'export CSV. */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Pending => 'En attente',
+            self::Paid => 'Payé',
+            self::Refunded => 'Remboursé',
+            self::Failed => 'Échoué',
+        };
+    }
 }

@@ -1,0 +1,15 @@
+{#
+  Pagination simple : page précédente / suivante.
+  Attend `page_courante`, `pages`, `route` et `parametres` (filtres à conserver).
+#}
+{% if pages > 1 %}
+    <nav class="admin__pagination" aria-label="Pagination">
+        {% if page_courante > 1 %}
+            <a href="{{ path(route, parametres|merge({page: page_courante - 1})) }}" rel="prev">‹ Précédente</a>
+        {% endif %}
+        <span>Page {{ page_courante }} sur {{ pages }}</span>
+        {% if page_courante < pages %}
+            <a href="{{ path(route, parametres|merge({page: page_courante + 1})) }}" rel="next">Suivante ›</a>
+        {% endif %}
+    </nav>
+{% endif %}

@@ -1,0 +1,29 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Connexion — Administration — {{ site.name }}{% endblock %}
+
+{% block admin_body %}
+    <h1>Administration</h1>
+
+    {% if erreur %}
+        <p class="alerte alerte--erreur" role="alert">{{ erreur }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ path('app_admin_login') }}" class="formulaire">
+        <div class="champ">
+            <label class="champ__label" for="identifiant">Identifiant</label>
+            <input type="text" id="identifiant" name="_username" value="{{ dernier_identifiant }}"
+                   autocomplete="username" required autofocus>
+        </div>
+
+        <div class="champ">
+            <label class="champ__label" for="mot-de-passe">Mot de passe</label>
+            <input type="password" id="mot-de-passe" name="_password"
+                   autocomplete="current-password" required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit" class="bouton">Se connecter</button>
+    </form>
+{% endblock %}

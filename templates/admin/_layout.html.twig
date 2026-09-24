@@ -1,0 +1,29 @@
+{#
+  Gabarit commun de l'espace d'administration.
+
+  Reprend l'en-tête et le pied du site, sans le bandeau de photos. Toutes
+  les pages passent `noindex: true` ; l'en-tête X-Robots-Tag est posé en plus
+  par AdminResponseListener.
+#}
+{% extends 'base.html.twig' %}
+
+{% block meta_description %}Espace d'administration de l'association LIBOKÉ.{% endblock %}
+
+{% block bandeau %}{% endblock %}
+
+{% block body %}
+    <div class="page admin">
+        {% if is_granted('ROLE_ADMIN') %}
+            <nav class="admin__nav" aria-label="Administration">
+                <ul>
+                    {% set route = app.request.attributes.get('_route') %}
+                    <li><a href="{{ path('app_admin_donations') }}"{{ route starts with 'app_admin_donations' ? ' aria-current="page"' }}>Dons</a></li>
+                    <li><a href="{{ path('app_admin_messages') }}"{{ route == 'app_admin_messages' ? ' aria-current="page"' }}>Messages de contact</a></li>
+                    <li class="admin__deconnexion"><a href="{{ logout_path('admin') }}">Se déconnecter</a></li>
+                </ul>
+            </nav>
+        {% endif %}
+
+        {% block admin_body %}{% endblock %}
+    </div>
+{% endblock %}

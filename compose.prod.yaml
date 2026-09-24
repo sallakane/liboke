@@ -27,6 +27,10 @@ services:
       MAILER_DSN: ${MAILER_DSN}
       CANONICAL_URL: ${CANONICAL_URL}
       SITE_INDEXABLE: ${SITE_INDEXABLE:-0}
+      # Compte /admin. Dans un fichier .env lu par Compose, doubler les « $ »
+      # du hash (« $$2y$$13$$… »), sinon Compose les interprète.
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
     ports:
       - target: 80
         published: 80

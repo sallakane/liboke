@@ -472,6 +472,9 @@ main {
 
 .champ input[type="text"],
 .champ input[type="email"],
+.champ input[type="password"],
+.champ input[type="date"],
+.champ select,
 .champ textarea {
     width: 100%;
     padding: 0.625rem 0.75rem;
@@ -490,6 +493,7 @@ main {
    est plus spécifique qu'un simple `.champ--erreur input`, qui serait ignoré. */
 .champ--erreur input[type="text"],
 .champ--erreur input[type="email"],
+.champ--erreur input[type="password"],
 .champ--erreur textarea {
     border-color: var(--erreur);
     border-width: 2px;
@@ -554,6 +558,169 @@ button.bouton {
     font: inherit;
     font-weight: 700;
     cursor: pointer;
+}
+
+/* ---------------------------------------------- 7 quinquies. administration */
+
+.admin__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-s) var(--esp-m);
+    margin: 0 0 var(--esp-l);
+    padding: 0 0 var(--esp-s);
+    border-bottom: 1px solid #d9d9d9;
+    list-style: none;
+}
+
+.admin__nav a[aria-current="page"] {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.admin__deconnexion {
+    margin-left: auto;
+}
+
+.admin__note {
+    max-width: min(var(--largeur-contenu), 100%);
+    color: #555;
+}
+
+.admin__filtres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--esp-m);
+    align-items: flex-end;
+    margin: var(--esp-m) 0;
+}
+
+.admin__filtres .champ {
+    flex: 1 1 11rem;
+    max-width: 16rem;
+}
+
+.admin__actions {
+    display: flex;
+    gap: var(--esp-s);
+    align-items: center;
+    margin-bottom: var(--esp-m);
+}
+
+.admin__totaux {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--esp-s);
+    margin: 0 0 var(--esp-m);
+}
+
+.admin__totaux div {
+    padding: 0.75rem 1rem;
+    background: var(--gris-clair);
+}
+
+.admin__totaux dt {
+    font-weight: 700;
+}
+
+.admin__totaux dd {
+    margin: 0;
+}
+
+/* Le tableau défile seul sur mobile, jamais la page entière. */
+.admin__tableau {
+    overflow-x: auto;
+    margin: var(--esp-m) 0;
+}
+
+.admin__tableau:focus-visible {
+    outline: 3px solid var(--or);
+}
+
+.admin__tableau table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+.admin__tableau th,
+.admin__tableau td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #d9d9d9;
+    text-align: left;
+    vertical-align: top;
+}
+
+.admin__tableau thead th {
+    border-bottom-width: 2px;
+    white-space: nowrap;
+}
+
+.admin__tableau .admin__nombre {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.admin__tableau code {
+    font-size: 0.8125rem;
+    word-break: break-all;
+}
+
+.statut {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 2px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.statut--paid {
+    background: #e8f3f0;
+    color: var(--vert);
+}
+
+.statut--pending {
+    background: #fdf3dc;
+    color: #6b4a00;
+}
+
+.statut--refunded,
+.statut--failed {
+    background: #fbecea;
+    color: var(--erreur);
+}
+
+.admin__pagination {
+    display: flex;
+    gap: var(--esp-m);
+    align-items: center;
+    margin: var(--esp-m) 0;
+}
+
+.admin__messages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.admin__messages > li {
+    max-width: min(var(--largeur-contenu), 100%);
+    padding: var(--esp-m) 0;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.admin__messages h2 {
+    margin: 0 0 var(--esp-xs);
+    font-size: 1.25rem;
+}
+
+.admin__meta {
+    margin: 0 0 var(--esp-s);
+    color: #555;
+    font-size: 0.9375rem;
+}
+
+.admin__message {
+    overflow-wrap: anywhere;
 }
 
 /* ------------------------------------------------- 7 quater. don en ligne */

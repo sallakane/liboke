@@ -1,0 +1,84 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Dons — Administration — {{ site.name }}{% endblock %}
+
+{% block admin_body %}
+    <h1>Dons</h1>
+
+    <p class="admin__note">
+        Registre local, en lecture seule. Stripe fait foi : un don n'est
+        « payé » qu'une fois confirmé par son webhook. Montants en euros.
+    </p>
+
+    <form method="get" action="{{ path('app_admin_donations') }}" class="admin__filtres">
+        <div class="champ">
+            <label class="champ__label" for="filtre-du">Créés à partir du</label>
+            <input type="date" id="filtre-du" name="du" value="{{ filtre.from ? filtre.from|date('Y-m-d') }}">
+        </div>
+        <div class="champ">
+            <label class="champ__label" for="filtre-au">jusqu'au</label>
+            <input type="date" id="filtre-au" name="au" value="{{ filtre.to ? filtre.to|date('Y-m-d') }}">
+        </div>
+        <div class="champ">
+            <label class="champ__label" for="filtre-statut">Statut</label>
+            <select id="filtre-statut" name="statut">
+                <option value="">Tous</option>
+                {% for statut in statuts %}
+                    <option value="{{ statut.value }}"{{ filtre.status == statut ? ' selected' }}>{{ statut.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="admin__actions">
+            <button type="submit" class="bouton">Filtrer</button>
+            <a href="{{ path('app_admin_donations') }}">Réinitialiser</a>
+        </div>
+    </form>
+
+    <dl class="admin__totaux">
+        {% for statut in statuts %}
+            {% set total = totaux[statut.value]|default({count: 0, amountCents: 0}) %}
+            <div>
+                <dt>{{ statut.label }}</dt>
+                <dd>{{ total.count }} don{{ total.count > 1 ? 's' }} · {{ (total.amountCents / 100)|number_format(2, ',', ' ') }} €</dd>
+            </div>
+        {% endfor %}
+    </dl>
+
+    <p><a class="bouton" href="{{ path('app_admin_donations_csv', filtre.toQuery) }}">Exporter en CSV</a></p>
+
+    {% if dons|length == 0 %}
+        <p>Aucun don ne correspond à ces critères.</p>
+    {% else %}
+        <div class="admin__tableau" tabindex="0" role="region" aria-label="Liste des dons">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Créé le</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col" class="admin__nombre">Montant</th>
+                        <th scope="col">Donateur</th>
+                        <th scope="col">Payé le</th>
+                        <th scope="col">Session Stripe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for don in dons %}
+                        <tr>
+                            <td>{{ don.createdAt|date('d/m/Y H:i') }}</td>
+                            <td><span class="statut statut--{{ don.status.value }}">{{ don.status.label }}</span></td>
+                            <td class="admin__nombre">{{ (don.amountCents / 100)|number_format(2, ',', ' ') }} {{ don.currency }}</td>
+                            <td>
+                                {{ don.donorName ?? '—' }}
+                                {% if don.donorEmail %}<br><a href="mailto:{{ don.donorEmail }}">{{ don.donorEmail }}</a>{% endif %}
+                            </td>
+                            <td>{{ don.paidAt ? don.paidAt|date('d/m/Y H:i') : '—' }}</td>
+                            <td><code>{{ don.stripeSessionId }}</code></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% include 'admin/_pagination.html.twig' with {route: 'app_admin_donations', parametres: filtre.toQuery} %}
+    {% endif %}
+{% endblock %}
