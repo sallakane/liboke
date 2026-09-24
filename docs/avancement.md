@@ -44,7 +44,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 3 | Couche contenu (Markdown + front matter), menu dynamique | **Livrée** |
 | 4 | SEO complet : canoniques, JSON-LD, sitemap, robots, 301, pages d'erreur | **Livrée** |
 | 5 | Formulaire de contact, anti-spam, purge RGPD | **Livrée** |
-| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement non joué) |
+| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement partiel à traiter) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8 | Performance, accessibilité, Lighthouse | À faire |
 | 9 | Préparation production, sauvegardes | À faire |
@@ -65,6 +65,8 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 | Webhook `checkout.session.completed` | 200, don passé à `paid` avec nom, e-mail, adresse complète et `payment_intent` |
 | Remerciement | Mis en file par le webhook, envoyé par le worker, reçu dans Mailpit |
 | Rejeu du même événement (`stripe events resend`) | 200, aucun doublon : 1 événement, 1 don payé, 1 seul e-mail |
+| Remboursement complet (`stripe refunds create`) | `charge.refunded` reçu (200), don passé à `refunded`, rejeu sans effet |
+| Espace `/admin` | Connexion, liste, filtres, export CSV vérifiés par le développeur |
 
 **Constats :**
 - Le compte de test est en **API Stripe 2020-03-02** (très ancienne). Les événements arrivent dans ce format, et le gestionnaire les lit correctement, adresse comprise. Le compte de production aura sa propre version : à vérifier au branchement de l'endpoint, qui peut être créé avec une version d'API explicite.
@@ -72,7 +74,7 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 
 **Reste à faire avant toute clé live :**
 1. Récupérer les accès du **compte Stripe existant de l'association** — il est en production, ses dons historiques y sont (clé `pk_live_` trouvée dans l'ancien thème, cf. audit §7). Ne pas en créer un nouveau. Vérifier que les clés de test utilisées appartiennent bien à ce compte.
-2. Tester un **remboursement** (`charge.refunded`), non encore joué en réel.
+2. **Remboursement partiel** : `charge.refunded` est aussi émis pour un remboursement partiel, et le code passe alors le don entier en `refunded`. Décider du traitement (ignorer tant que `charge.refunded` ne vaut pas `true`, ou stocker le montant remboursé — nouvelle colonne et migration).
 3. En production : déclarer l'endpoint `https://<hôte>/stripe/webhook` dans le tableau de bord (événements `checkout.session.completed` et `charge.refunded`) et placer son `whsec_` dans l'environnement du serveur.
 
 ---
@@ -151,6 +153,6 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 
 ## 7. Prochaine étape
 
-1. **Stripe** (§3) : parcours de don validé en mode test ; restent le remboursement et le branchement du compte de production.
+1. **Stripe** (§3) : parcours de don et remboursement complet validés en mode test ; restent le remboursement partiel et le branchement du compte de production.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
 3. **Phase 8** : performance et accessibilité, audit Lighthouse (cibles ≥ 95), y compris sur les pages `/admin` pour l'accessibilité.
