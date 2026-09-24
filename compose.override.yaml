@@ -52,7 +52,12 @@ services:
   stripe-cli:
     image: stripe/stripe-cli
     profiles: [stripe]
-    command: listen --forward-to https://php/stripe/webhook --skip-verify
+    # http://php et non https : dans le réseau Docker, FrankenPHP ne sert
+    # l'hôte « php » qu'en HTTP (SERVER_NAME « localhost, php:80 »), en HTTPS
+    # la poignée de main TLS échoue.
+    # Les versions récentes de la CLI exigent la liste des événements : ceux
+    # que traite App\Stripe\WebhookHandler, à tenir à jour avec lui.
+    command: listen --events checkout.session.completed,charge.refunded --forward-to http://php/stripe/webhook
     # Compose n'interpole que .env, jamais .env.local : la clé est donc lue
     # par env_file. Un bloc `environment` la masquerait, ne pas en ajouter.
     env_file:
