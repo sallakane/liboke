@@ -3,9 +3,9 @@
 Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
 Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
 
-> **État :** phases 0 à 7 livrées. Le module de dons est codé et testé contre un double,
-> mais **n'a pas encore été validé avec des clés de test Stripe**. Détails dans
-> [`docs/avancement.md`](docs/avancement.md).
+> **État :** phases 0 à 7 livrées. Le parcours de don a été validé de bout en bout
+> en mode test Stripe ; le branchement du compte de production reste à faire.
+> Détails dans [`docs/avancement.md`](docs/avancement.md).
 
 ## Stack
 

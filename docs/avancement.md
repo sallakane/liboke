@@ -44,7 +44,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 3 | Couche contenu (Markdown + front matter), menu dynamique | **Livrée** |
 | 4 | SEO complet : canoniques, JSON-LD, sitemap, robots, 301, pages d'erreur | **Livrée** |
 | 5 | Formulaire de contact, anti-spam, purge RGPD | **Livrée** |
-| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, non validée contre Stripe** |
+| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement non joué) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8 | Performance, accessibilité, Lighthouse | À faire |
 | 9 | Préparation production, sauvegardes | À faire |
@@ -54,21 +54,26 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 
 ---
 
-## 3. ⚠️ Point d'arrêt : valider Stripe avant toute clé live
+## 3. Validation Stripe en mode test — faite le 2026-09-24
 
-C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien n'a encore joint Stripe.
+Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make stripe` :
 
-1. Récupérer les accès du **compte Stripe existant de l'association** — il est en production, ses dons historiques y sont (clé `pk_live_` trouvée dans l'ancien thème, cf. audit §7). Ne pas en créer un nouveau.
-2. Mettre les clés **de test** dans `.env.local`, jamais dans `.env` :
-   ```
-   STRIPE_SECRET_KEY=sk_test_…
-   STRIPE_API_KEY=sk_test_…
-   STRIPE_WEBHOOK_SECRET=whsec_…   # celui affiché par la CLI, ≠ celui de prod
-   ```
-3. `make stripe` relaie les webhooks vers `https://localhost/stripe/webhook`.
-4. Parcourir un don avec une carte de test et vérifier : session créée, redirection, retour sur `/don/merci`, don passé à `paid` par le webhook, remerciement en file puis envoyé par `make worker`.
+| Étape | Résultat |
+|---|---|
+| `POST /don/checkout` | Session réelle créée, 303 vers `checkout.stripe.com`, don `pending` en base |
+| Paiement carte `4242…` sur la page Stripe | Retour sur `/don/merci` |
+| Webhook `checkout.session.completed` | 200, don passé à `paid` avec nom, e-mail, adresse complète et `payment_intent` |
+| Remerciement | Mis en file par le webhook, envoyé par le worker, reçu dans Mailpit |
+| Rejeu du même événement (`stripe events resend`) | 200, aucun doublon : 1 événement, 1 don payé, 1 seul e-mail |
 
-**Ce qui n'est pas vérifié à ce jour** : la création réelle de session, le rendu de la page Stripe, le format exact des webhooks réels. Tout le reste est testé contre un double (`tests/Double/FakeCheckoutSessionFactory`).
+**Constats :**
+- Le compte de test est en **API Stripe 2020-03-02** (très ancienne). Les événements arrivent dans ce format, et le gestionnaire les lit correctement, adresse comprise. Le compte de production aura sa propre version : à vérifier au branchement de l'endpoint, qui peut être créé avec une version d'API explicite.
+- `stripe_customer_id` reste vide : en mode `payment`, Checkout ne crée pas de client Stripe. Sans conséquence au lancement ; à revoir avec le don mensuel (Customer Portal).
+
+**Reste à faire avant toute clé live :**
+1. Récupérer les accès du **compte Stripe existant de l'association** — il est en production, ses dons historiques y sont (clé `pk_live_` trouvée dans l'ancien thème, cf. audit §7). Ne pas en créer un nouveau. Vérifier que les clés de test utilisées appartiennent bien à ce compte.
+2. Tester un **remboursement** (`charge.refunded`), non encore joué en réel.
+3. En production : déclarer l'endpoint `https://<hôte>/stripe/webhook` dans le tableau de bord (événements `checkout.session.completed` et `charge.refunded`) et placer son `whsec_` dans l'environnement du serveur.
 
 ---
 
@@ -108,6 +113,8 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Stripe CLI** — les versions récentes exigent `--events` ; et le relais doit viser `http://php`, pas `https://php` : dans le réseau Docker, FrankenPHP ne sert l'hôte `php` qu'en HTTP (échec TLS « internal error » sinon).
+- **`docker compose run`** recrée les services dont il dépend (ici `php`) avec les variables du shell courant : sans `HTTP_PORT=8080 …`, le conteneur repart sur 80/443. Préférer `docker compose exec stripe-cli stripe …`.
 - **Connexion dans les tests** — `loginUser()` doit recevoir l'utilisateur du vrai fournisseur : Symfony compare le hash à chaque requête et déconnecte si un utilisateur « nu » est passé.
 - **SVG du thème** — logo et icônes sociales étaient exportés sur un plan de travail A4 ; sans recadrage de la `viewBox` ils s'affichent minuscules. `logo.svg` reste un faux vectoriel (bitmaps en base64, 69 Ko).
 
@@ -144,6 +151,6 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 
 ## 7. Prochaine étape
 
-1. **Valider Stripe avec des clés de test** (§3) : toujours le point d'arrêt, la phase 7 a été faite avant à la demande du développeur.
+1. **Stripe** (§3) : parcours de don validé en mode test ; restent le remboursement et le branchement du compte de production.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
 3. **Phase 8** : performance et accessibilité, audit Lighthouse (cibles ≥ 95), y compris sur les pages `/admin` pour l'accessibilité.
