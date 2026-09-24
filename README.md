@@ -1,2 +1,82 @@
-# liboke
-Association Liboke
+# Association LIBOKÉ — site vitrine
+
+Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
+Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
+
+> **État :** phases 0 à 6 livrées. Le module de dons est codé et testé contre un double,
+> mais **n'a pas encore été validé avec des clés de test Stripe**. Détails dans
+> [`docs/avancement.md`](docs/avancement.md).
+
+## Stack
+
+- **Symfony 8.1**, PHP ≥ 8.4, servi par **FrankenPHP** (base `dunglas/symfony-docker`)
+- Rendu **Twig côté serveur**, assets via **AssetMapper** (ni Node ni bundler)
+- Contenu éditorial en **Markdown + front matter** dans `content/`, jamais en base
+- **PostgreSQL 16 + Doctrine**, réservés aux données transactionnelles (dons, événements Stripe, messages de contact)
+- **Stripe Checkout** (page hébergée par Stripe) + webhooks signés et idempotents
+- **Messenger** (transport `doctrine`) pour les emails asynchrones
+- PHPUnit, PHPStan, PHP-CS-Fixer
+
+## Démarrage
+
+Prérequis : Docker avec Compose v2. Tout tourne dans les conteneurs, rien n'est à installer sur l'hôte.
+
+```bash
+make up        # build + démarrage (FrankenPHP, PostgreSQL, Mailpit)
+make migrate   # applique les migrations
+```
+
+| Service | Adresse |
+|---|---|
+| Site | https://localhost (certificat auto-signé : accepter l'avertissement) |
+| Mailpit | http://localhost:8025 |
+| Base | non exposée sur l'hôte → `make db` |
+
+> Les emails partent en asynchrone : lancer `make worker` pour qu'ils arrivent dans Mailpit.
+
+Les secrets locaux (clés Stripe de test, etc.) vont dans `.env.local`, qui n'est pas versionné.
+**Aucune clé live dans un fichier du dépôt.**
+
+## Commandes
+
+`make help` liste toutes les commandes. Les principales :
+
+| Commande | Rôle |
+|---|---|
+| `make up` / `make down` | Démarrer / arrêter la stack |
+| `make sh` | Shell dans le conteneur `php` |
+| `make cc` | Vider le cache Symfony |
+| `make test` | PHPUnit (prépare la base de test) |
+| `make lint` | PHP-CS-Fixer (dry-run), PHPStan, lint Twig / YAML / conteneur |
+| `make fix` | Appliquer PHP-CS-Fixer |
+| `make migration` / `make migrate` | Générer / appliquer les migrations Doctrine |
+| `make worker` | Consommer la file Messenger |
+| `make stripe` | Relayer les webhooks Stripe en local (nécessite `STRIPE_API_KEY`) |
+
+## Modifier le contenu
+
+Une page = un fichier dans `content/pages/`. Le front matter définit le titre, le slug, l'entrée de menu et les métadonnées SEO :
+
+```markdown
+---
+title: "L'association"
+slug: l-association
+menu: { label: "L'association", weight: 20 }
+seo:
+  title: "L'association LIBOKÉ — Histoire, mission et équipe"
+  description: "150 à 160 caractères décrivant la page."
+template: default
+updated: "2026-09-20"
+---
+
+Contenu en **Markdown**.
+```
+
+Les informations globales (coordonnées, réseaux sociaux, pied de page) sont dans `content/site.yaml`.
+Les textes encore provisoires sont marqués `[À COMPLÉTER]`.
+
+## Documentation
+
+- [`CLAUDE.md`](CLAUDE.md) — cahier des charges : il fait foi
+- [`docs/avancement.md`](docs/avancement.md) — état d'avancement, décisions prises, pièges, point de reprise
+- [`docs/theme-audit.md`](docs/theme-audit.md) — audit du thème Drupal `libokev2` d'origine
