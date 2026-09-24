@@ -3,7 +3,7 @@
 Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
 Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
 
-> **État :** phases 0 à 6 livrées. Le module de dons est codé et testé contre un double,
+> **État :** phases 0 à 7 livrées. Le module de dons est codé et testé contre un double,
 > mais **n'a pas encore été validé avec des clés de test Stripe**. Détails dans
 > [`docs/avancement.md`](docs/avancement.md).
 
@@ -33,6 +33,7 @@ make migrate   # applique les migrations
 | Base | non exposée sur l'hôte → `make db` |
 
 > Les emails partent en asynchrone : lancer `make worker` pour qu'ils arrivent dans Mailpit.
+> Le même worker exécute les tâches planifiées (purge des messages de contact de plus de 12 mois).
 
 Les secrets locaux (clés Stripe de test, etc.) vont dans `.env.local`, qui n'est pas versionné.
 **Aucune clé live dans un fichier du dépôt.**
@@ -50,8 +51,25 @@ Les secrets locaux (clés Stripe de test, etc.) vont dans `.env.local`, qui n'es
 | `make lint` | PHP-CS-Fixer (dry-run), PHPStan, lint Twig / YAML / conteneur |
 | `make fix` | Appliquer PHP-CS-Fixer |
 | `make migration` / `make migrate` | Générer / appliquer les migrations Doctrine |
-| `make worker` | Consommer la file Messenger |
+| `make worker` | Consommer la file Messenger et les tâches planifiées |
+| `make admin-password` | Générer le hash du mot de passe de l'espace `/admin` |
 | `make stripe` | Relayer les webhooks Stripe en local (nécessite `STRIPE_API_KEY`) |
+
+## Espace d'administration
+
+`/admin` donne accès, en lecture seule, aux dons (filtres, totaux, export CSV) et aux messages de contact.
+Un seul compte, déclaré par variables d'environnement, sans aucune table utilisateur :
+
+```bash
+make admin-password   # affiche le hash du mot de passe choisi
+```
+
+puis dans `.env.local` (ou l'environnement du serveur en production) :
+
+```
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH='$2y$13$…'
+```
 
 ## Modifier le contenu
 

@@ -416,7 +416,7 @@ make worker      # messenger:consume async -vv
 5. ✅ **Phase 4** — SEO complet (meta, JSON-LD, sitemap, robots, redirections, pages d'erreur).
 6. ✅ **Phase 5** — Formulaire de contact (envoi + persistance).
 7. ⚠️ **Phase 6** — Dons Stripe : page « Nous soutenir », Checkout, webhook signé et idempotent, emails de remerciement. *Code livré et testé contre un double, **validation avec des clés de test encore à faire** avant toute clé live (`docs/avancement.md` §3).*
-8. **Phase 7** — Espace admin minimal (lecture seule, compte unique en env), purge RGPD, pages Mentions légales et Politique de confidentialité.
+8. ✅ **Phase 7** — Espace admin minimal (lecture seule, compte unique en env), purge RGPD, pages Mentions légales et Politique de confidentialité. *Textes légaux livrés avec des `[À COMPLÉTER]` à faire remplir par l'association.*
 9. **Phase 8** — Optimisations performance/accessibilité, audit Lighthouse, tests.
 10. **Phase 9** — Préparation prod Docker, sauvegardes base (en attente des instructions du développeur).
 

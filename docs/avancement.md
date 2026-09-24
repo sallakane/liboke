@@ -1,6 +1,7 @@
 # État d'avancement — site association LIBOKÉ
 
-> Dernière mise à jour : **2026-09-20**.
+> Dernière mise à jour : **2026-09-24**.
+> Dépôt : `git@github.com:sallakane/liboke.git`, branche `main`.
 > Documents liés : `CLAUDE.md` (cahier des charges, fait foi), `docs/theme-audit.md` (phase 0).
 
 ---
@@ -10,7 +11,7 @@
 ```bash
 cd ~/Projects/liboke
 make up          # FrankenPHP + PostgreSQL + Mailpit
-make test        # 89 tests, 498 assertions
+make test        # 115 tests, 585 assertions
 make lint        # PHP-CS-Fixer + PHPStan 9 + Twig + YAML + conteneur
 ```
 
@@ -20,7 +21,16 @@ make lint        # PHP-CS-Fixer + PHPStan 9 + Twig + YAML + conteneur
 | Mailpit | `http://localhost:8025` |
 | Base | non exposée sur l'hôte → `make db` |
 
-**Piège n° 1 en développement** : les courriels partent en asynchrone et **aucun worker ne tourne par défaut**. Un message envoyé reste dans `messenger_messages` tant qu'on ne lance pas `make worker` — Mailpit paraît vide alors que tout fonctionne.
+**Piège n° 1 en développement** : les courriels partent en asynchrone et **aucun worker ne tourne par défaut**. Un message envoyé reste dans `messenger_messages` tant qu'on ne lance pas `make worker` — Mailpit paraît vide alors que tout fonctionne. Le même worker déclenche les tâches planifiées (purge RGPD).
+
+**Espace `/admin`** : personne ne peut s'y connecter tant que le compte n'est pas déclaré. `make admin-password` produit le hash, à placer dans `.env.local` :
+
+```
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des « $ »
+```
+
+**Ports déjà pris** : si un autre projet occupe 80/443 (cas d'un Traefik local), démarrer avec `HTTP_PORT=8080 HTTPS_PORT=8443 HTTP3_PORT=8443 make up`. L'hôte canonique restant `https://localhost`, les requêtes directes sur `:8443` doivent porter l'en-tête `Host: localhost`, sinon la redirection canonique renvoie vers le port 443.
 
 ---
 
@@ -35,11 +45,11 @@ make lint        # PHP-CS-Fixer + PHPStan 9 + Twig + YAML + conteneur
 | 4 | SEO complet : canoniques, JSON-LD, sitemap, robots, 301, pages d'erreur | **Livrée** |
 | 5 | Formulaire de contact, anti-spam, purge RGPD | **Livrée** |
 | 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, non validée contre Stripe** |
-| 7 | Espace admin, purge planifiée, pages légales | À faire |
+| 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8 | Performance, accessibilité, Lighthouse | À faire |
 | 9 | Préparation production, sauvegardes | À faire |
 
-**Volume actuel** : 41 classes PHP, 14 fichiers de test, 23 gabarits Twig, 3 migrations, 8 pages de contenu, 721 lignes de CSS.
+**Volume actuel** : 47 classes PHP, 18 fichiers de test, 28 gabarits Twig, 3 migrations, 8 pages de contenu, 888 lignes de CSS.
 **Tables** : `contact_message`, `donation`, `stripe_event`, `messenger_messages`, `doctrine_migration_versions`.
 
 ---
@@ -76,6 +86,12 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 | **Cache du contenu** | Court-circuité quand `kernel.debug` | Sinon modifier un `.md` n'aurait aucun effet visible |
 | **Stimulus** | Installé mais **pas chargé** | 45 Ko pour zéro contrôleur. Décommenter l'import dans `assets/app.js` au premier besoin |
 | **Reçus fiscaux** | Champs réservés, génération non implémentée | Interdiction explicite d'en promettre un, verrouillée par un test |
+| **Compte admin** | Fournisseur maison `App\Security\AdminUserProvider`, pas le fournisseur `memory` | `memory` n'accepte pas une variable d'environnement comme identifiant. Variables vides = connexion impossible |
+| **Pare-feu** | Limité à `^/admin` | Le reste du site n'ouvre aucune session : pages cachables, webhook hors pare-feu (§10 règle 5) |
+| **Admin en lecture seule** | Aucune route d'écriture, verrouillé par un test (405) | Une correction de don se fait dans Stripe, qui fait foi, et revient par webhook |
+| **Export CSV** | `;`, virgule décimale, BOM UTF-8, cellules « formule » neutralisées | Ouverture directe dans Excel ; le nom du donateur est saisi par un inconnu chez Stripe |
+| **Planification** | `symfony/scheduler` (`src/Schedule.php`), pas de crontab | Versionnée et testée ; tourne dans le worker déjà nécessaire aux courriels. Intervalle quotidien plutôt que cron, pour éviter `dragonmantank/cron-expression` |
+| **Politique de confidentialité** | Rédigée sur l'hypothèse « sans Google Analytics » | C'est la règle par défaut de CLAUDE.md §11. Voir décision en attente n° 1 |
 
 ---
 
@@ -88,6 +104,11 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 - **Le client de test redémarre le noyau avant chaque requête** : un état d'instance dans un service (compteur, cache `ArrayAdapter`) repart de zéro. `ArrayAdapter` est en plus remis à zéro par le resetter de services. Pour le limiteur de débit, on garde le stockage de production et on le remet à zéro explicitement dans les tests.
 - **Spécificité CSS** — `.champ input[type="text"]` l'emporte sur `.champ--erreur input`. Les sélecteurs d'état doivent être au moins aussi spécifiques.
 - **Recette Flex et `CLAUDE.md`** — l'initialisation Symfony écrase `CLAUDE.md` par un pointeur vers `AGENTS.md`. Sauvegarder avant tout `composer create-project` ou recette.
+- **`composer require` dans le conteneur** crée les nouveaux fichiers (recettes) en `root`. Les rendre à l'utilisateur : `docker compose exec php chown 1000:1000 <fichier>`.
+- **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
+- **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
+- **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Connexion dans les tests** — `loginUser()` doit recevoir l'utilisateur du vrai fournisseur : Symfony compare le hash à chaque requête et déconnecte si un utilisateur « nu » est passé.
 - **SVG du thème** — logo et icônes sociales étaient exportés sur un plan de travail A4 ; sans recadrage de la `viewBox` ils s'affichent minuscules. `logo.svg` reste un faux vectoriel (bitmaps en base64, 69 Ko).
 
 ---
@@ -98,7 +119,7 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 
 | # | Sujet | Impact |
 |---|---|---|
-| 1 | **Google Analytics** | L'ancien site avait un tag GA4 (`G-BCGEBR2L65`) sans consentement. Le reprendre impose un bandeau cookies et annule le « aucun cookie » du §11. **Bloque la phase 7** (politique de confidentialité) |
+| 1 | **Google Analytics** | L'ancien site avait un tag GA4 (`G-BCGEBR2L65`) sans consentement. La politique de confidentialité est rédigée **sans** mesure d'audience (règle par défaut du §11). Reprendre GA imposerait un bandeau cookies et la réécriture de sa section « Cookies » |
 | 2 | **Anciennes URLs indexées** | `config/redirects.yaml` ne couvre que le préfixe de langue `/fr/*` et `/accueil`. Sans la liste des URLs réellement indexées (Search Console, crawl, archive web), le capital SEO de l'ancien site est perdu |
 | 3 | **Compte Stripe** | Voir §3 ci-dessus |
 
@@ -110,11 +131,12 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 - **Photographies** et contenus réels : toutes les pages sont en `[À COMPLÉTER]`. L'image d'accueil actuelle vient de l'ancien programme de bons et ne correspond plus au propos.
 - **Menu** : les six entrées actuelles suivent CLAUDE.md §6, à valider.
 - **Carrousel** d'images et page **Événements** : à conserver ou non.
-- Coordonnées de l'association, mentions légales, hébergeur.
+- Coordonnées de l'association, mentions légales, hébergeur : toutes les lignes `[À COMPLÉTER]` de `mentions-legales.md` et `politique-de-confidentialite.md` (forme juridique, RNA, siège, directeur de la publication, hébergeur, prestataire d'envoi des courriels, adresse de contact RGPD).
+- Relire la mention de Stripe dans la politique de confidentialité (entité Stripe Payments Europe, transfert vers Stripe, Inc. sous *Data Privacy Framework*) avec la documentation légale Stripe en vigueur.
 
 ### À trancher côté technique
 
-- **`git init`** : le projet n'est pas un dépôt. La racine git courante est `~/Projects`, où `liboke/` n'est qu'un dossier non suivi. Rien n'a été committé. Les Conventional Commits du §15 ne peuvent pas s'appliquer avant.
+- **Compte admin de production** : `ADMIN_USERNAME` et `ADMIN_PASSWORD_HASH` à injecter dans l'environnement du serveur (`compose.prod.yaml` les attend ; doubler les `$` du hash dans un fichier lu par Compose).
 - **www / sans-www** avant de figer `CANONICAL_URL`.
 - Remplacer `logo.svg` par un vrai vectoriel si le client peut en fournir un.
 
@@ -122,4 +144,6 @@ C'est la première chose à faire en reprenant. CLAUDE.md §16 l'impose, et rien
 
 ## 7. Prochaine étape
 
-Après la validation Stripe (§3), **phase 7** : espace `/admin` en lecture seule (compte unique en variable d'environnement, aucune table `user`), planification de `app:purge-contact-messages`, et rédaction des pages Mentions légales et Politique de confidentialité — cette dernière dépend de la décision Google Analytics.
+1. **Valider Stripe avec des clés de test** (§3) : toujours le point d'arrêt, la phase 7 a été faite avant à la demande du développeur.
+2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
+3. **Phase 8** : performance et accessibilité, audit Lighthouse (cibles ≥ 95), y compris sur les pages `/admin` pour l'accessibilité.
