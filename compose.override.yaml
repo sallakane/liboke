@@ -53,7 +53,10 @@ services:
     image: stripe/stripe-cli
     profiles: [stripe]
     command: listen --forward-to https://php/stripe/webhook --skip-verify
-    environment:
-      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+    # Compose n'interpole que .env, jamais .env.local : la clé est donc lue
+    # par env_file. Un bloc `environment` la masquerait, ne pas en ajouter.
+    env_file:
+      - path: .env.local
+        required: false
     depends_on:
       - php
