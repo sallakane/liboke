@@ -1,7 +1,7 @@
 # CLAUDE.md — Site vitrine association LIBOKÉ
 
 > Document de référence pour Claude Code. À lire intégralement avant toute action.
-> Domaine cible : **association-liboke.com**
+> Domaine cible : **association-liboke.org**
 >
 > `AGENTS.md` (généré par la recette Symfony Flex) donne les conventions Symfony génériques.
 > **En cas de divergence, ce document prime.**
@@ -227,7 +227,7 @@ Le contenu réel sera fourni plus tard : créer des pages avec un **contenu prov
 - `/sitemap.xml` généré depuis `PageRepository` (exclut les pages `noindex`), avec `lastmod`.
 - `/robots.txt` dynamique : `Disallow: /` hors environnement `prod`, référence au sitemap en prod.
 - En dev/staging : en-tête `X-Robots-Tag: noindex`.
-- Redirection 301 vers l'hôte canonique (`https://association-liboke.com`, choix www/non-www à fixer en prod).
+- Redirection 301 vers l'hôte canonique (`https://association-liboke.org`, choix www/non-www à fixer en prod).
 - Si les anciennes URLs Drupal sont connues (ex. `/node/12`, alias), prévoir une table de redirections 301 dans `config/redirects.yaml`.
 - Pages 404/500 personnalisées, au design du site, avec le bon code HTTP.
 - `/nous-soutenir` est une page de contenu **indexable** ; `/don/merci` et tout `/admin` sont en `noindex` et exclus du sitemap.

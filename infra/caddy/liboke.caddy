@@ -7,11 +7,11 @@
 #
 # Le port doit correspondre à LIBOKE_HTTP_PORT de .env.prod.local.
 
-www.association-liboke.com {
-	redir https://association-liboke.com{uri} permanent
+www.association-liboke.org {
+	redir https://association-liboke.org{uri} permanent
 }
 
-association-liboke.com {
+association-liboke.org {
 	# Caddy transmet X-Forwarded-For / -Proto / -Host, que Symfony croit
 	# (config/packages/framework.yaml, when@prod). La compression est faite
 	# par le conteneur. Pas de réécriture du corps : la signature du webhook

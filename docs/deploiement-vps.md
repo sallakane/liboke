@@ -26,7 +26,7 @@ Le VPS héberge d'autres projets en production. Rien de ce qui suit ne doit les 
 Internet ──443──▶ Caddy de l'hôte (systemd, /etc/caddy/Caddyfile, certificats Let's Encrypt)
                    ├─ sunu-cagnotte.org        → 127.0.0.1:8080  (autre projet)
                    ├─ ag-rapport-generator.fr  → 127.0.0.1:8001  (autre projet)
-                   └─ association-liboke.com   → 127.0.0.1:8090  ← liboke
+                   └─ association-liboke.org   → 127.0.0.1:8090  ← liboke
                                                    │
                      projet Compose « liboke » (réseau privé liboke_default)
                      ├─ php       FrankenPHP, mode worker, HTTP simple sur :80,
@@ -56,7 +56,7 @@ free -h; df -h /var/lib/docker /var/www      # RAM et disque disponibles
 ss -ltnp | grep -E ':(8090) '                # le port 8090 doit être LIBRE
 docker ps --format '{{.Names}}\t{{.Ports}}'  # projets en place (ne pas y toucher)
 sudo cat /etc/caddy/Caddyfile                # sites déjà servis
-dig +short association-liboke.com www.association-liboke.com
+dig +short association-liboke.org www.association-liboke.org
 curl -s https://api.ipify.org; echo          # IP publique du VPS, à comparer au DNS
 ```
 
@@ -66,8 +66,8 @@ Si le port 8090 est pris, en choisir un autre libre : le reporter dans `LIBOKE_H
 
 ## 3. Questions à poser au développeur
 
-1. **Domaine** : `association-liboke.com` (cahier des charges) ? Avec redirection de `www.` vers le domaine nu, comme les autres projets du VPS ?
-   L'ancien site Drupal était servi sous **`associationliboke.com`** (sans tiret) : vérifier s'il est encore en ligne et où pointe son DNS avant de changer quoi que ce soit.
+1. **Domaine** : `association-liboke.org` (confirmé par le développeur). Redirection de `www.` vers le domaine nu, comme les autres projets du VPS : à confirmer.
+   Si l'ancien site Drupal est encore servi sur ce domaine ailleurs, la bascule DNS le coupera : le faire confirmer avant.
 2. **DNS** : le domaine pointe-t-il déjà vers ce VPS (§2) ? Sinon, c'est au développeur de modifier les enregistrements A/AAAA. Tant que le DNS ne pointe pas ici, ne pas ajouter le bloc Caddy : Caddy échouerait à obtenir le certificat (sans gêner les autres sites, mais en boucle dans ses journaux).
 3. **Stripe** : clés de **test** pour ce premier déploiement (le compte de production de l'association n'est pas encore branché) ? Elles sont dans le `.env.local` de développement du développeur.
 4. **E-mails** : prestataire SMTP choisi ? À défaut, `MAILER_DSN=null://null` : aucun envoi, mais les messages de contact restent lisibles dans `/admin`.
@@ -100,7 +100,7 @@ Remplir chaque variable (le modèle commente chacune) :
 |---|---|
 | `APP_SECRET` | `openssl rand -hex 32` |
 | `POSTGRES_PASSWORD` | `openssl rand -base64 24 \| tr -d '/+='` (alphanumérique : il entre dans une URL) |
-| `CANONICAL_URL` | `https://association-liboke.com` (réponse §3.1) |
+| `CANONICAL_URL` | `https://association-liboke.org` (réponse §3.1) |
 | `SITE_INDEXABLE` | **`0`** : le contenu est encore provisoire |
 | `LIBOKE_HTTP_PORT` | `8090` ou le port libre retenu (§2) |
 | `MAILER_DSN` | réponse §3.4 |
@@ -126,10 +126,10 @@ Le reporter dans `.env.prod.local` (`ADMIN_PASSWORD_HASH='$2y$13$…'`), puis `b
 ### 4.4 Vérification avant Caddy
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' -H 'Host: association-liboke.com' -H 'X-Forwarded-Proto: https' http://127.0.0.1:8090/
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Host: association-liboke.org' -H 'X-Forwarded-Proto: https' http://127.0.0.1:8090/
 # 200 attendu
-curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' -H 'Host: association-liboke.com' http://127.0.0.1:8090/
-# 301 vers https://association-liboke.com/ attendu (en-têtes de proxy absents)
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' -H 'Host: association-liboke.org' http://127.0.0.1:8090/
+# 301 vers https://association-liboke.org/ attendu (en-têtes de proxy absents)
 bin/prod ps        # php « healthy », worker et database « Up »
 ```
 
@@ -151,17 +151,17 @@ En cas de problème : remettre la copie `Caddyfile.avant-liboke-…` et recharge
 ### 4.6 Vérifications finales
 
 ```bash
-curl -sI https://association-liboke.com | head -5              # 200, certificat valide
-curl -sI https://www.association-liboke.com | grep -i location   # 301 vers le domaine nu
-curl -s https://association-liboke.com/robots.txt               # « Disallow: / » tant que SITE_INDEXABLE=0
-curl -sI https://association-liboke.com/admin | grep -i location # vers /admin/connexion
-curl -s -o /dev/null -w '%{http_code}\n' -X POST https://association-liboke.com/stripe/webhook   # 400 (signature absente), surtout pas 301
+curl -sI https://association-liboke.org | head -5              # 200, certificat valide
+curl -sI https://www.association-liboke.org | grep -i location   # 301 vers le domaine nu
+curl -s https://association-liboke.org/robots.txt               # « Disallow: / » tant que SITE_INDEXABLE=0
+curl -sI https://association-liboke.org/admin | grep -i location # vers /admin/connexion
+curl -s -o /dev/null -w '%{http_code}\n' -X POST https://association-liboke.org/stripe/webhook   # 400 (signature absente), surtout pas 301
 # Les autres projets répondent toujours :
 curl -sI https://sunu-cagnotte.org | head -1
 curl -sI https://ag-rapport-generator.fr | head -1
 ```
 
-Puis connexion à `https://association-liboke.com/admin` avec le compte du §4.3.
+Puis connexion à `https://association-liboke.org/admin` avec le compte du §4.3.
 
 ---
 
@@ -169,7 +169,7 @@ Puis connexion à `https://association-liboke.com/admin` avec le compte du §4.3
 
 Dans le tableau de bord Stripe (mode **test** pour l'instant) → Développeurs → Webhooks → Ajouter un endpoint :
 
-- URL : `https://association-liboke.com/stripe/webhook`
+- URL : `https://association-liboke.org/stripe/webhook`
 - Événements : `checkout.session.completed`, `charge.refunded`
 
 Copier son secret de signature (`whsec_…`) dans `STRIPE_WEBHOOK_SECRET`, puis `bin/prod up -d`. Faire un don de test (carte `4242 4242 4242 4242`) et vérifier qu'il passe à « Payé » dans `/admin/dons` (le webhook fait foi, pas la page de retour).

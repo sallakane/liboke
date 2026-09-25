@@ -10,7 +10,7 @@ updated: "2026-09-25"
 
 ## Éditeur du site
 
-Le site association-liboke.com est édité par l'**association LIBOKÉ**.
+Le site association-liboke.org est édité par l'**association LIBOKÉ**.
 
 - Forme juridique : [À COMPLÉTER] (par exemple : association régie par la loi du 1er juillet 1901)
 - Numéro RNA : [À COMPLÉTER]

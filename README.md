@@ -1,6 +1,6 @@
 # Association LIBOKÉ — site vitrine
 
-Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
+Refonte du site [association-liboke.org](https://association-liboke.org), qui remplace l'ancien Drupal.
 Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
 
 > **État :** phases 0 à 8a livrées, production préparée (phase 9). Le parcours de don a été validé de bout en bout
