@@ -5,7 +5,7 @@ seo:
   title: "Mentions légales — Association LIBOKÉ"
   description: "Mentions légales du site de l'association LIBOKÉ : identité de l'éditeur, directeur de la publication, hébergeur et droits de propriété intellectuelle."
 template: default
-updated: "2026-09-24"
+updated: "2026-09-25"
 ---
 
 ## Éditeur du site
@@ -32,10 +32,10 @@ Le site est hébergé par :
 ## Dons en ligne
 
 Les paiements des dons sont traités par la société **Stripe**, prestataire de
-services de paiement. La saisie des coordonnées bancaires se fait
-exclusivement sur une page sécurisée hébergée par Stripe : aucune donnée de
-carte bancaire ne transite par les serveurs de l'association ni n'y est
-conservée.
+services de paiement. Les coordonnées bancaires sont saisies dans un
+formulaire sécurisé fourni par Stripe et affiché sur la page de don : elles
+sont transmises directement à Stripe, sans transiter par les serveurs de
+l'association ni y être conservées.
 
 ## Données personnelles
 

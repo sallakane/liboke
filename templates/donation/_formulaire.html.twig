@@ -1,0 +1,31 @@
+{#
+  Formulaire de choix du montant.
+
+  Rendu dans la page, ou seul en réponse JSON quand le contrôleur Stimulus
+  « don » doit réafficher des erreurs sans recharger la page.
+#}
+{% for message in app.flashes('erreur') %}
+    <p class="alerte alerte--erreur" role="alert">{{ message }}</p>
+{% endfor %}
+
+{{ form_start(form, {action: path('app_donation_checkout'), attr: {class: 'formulaire formulaire--don', 'data-action': 'don#envoyer'}}) }}
+    {% if form.vars.submitted and not form.vars.valid %}
+        <p class="alerte alerte--erreur" role="alert">
+            Le formulaire contient des erreurs. Merci de vérifier le montant.
+        </p>
+    {% endif %}
+
+    {# Erreurs de niveau formulaire : jeton CSRF invalide, par exemple. #}
+    {{ form_errors(form) }}
+
+    {{ form_row(form.preset) }}
+    {{ form_row(form.custom) }}
+
+    <button type="submit" class="bouton">Continuer vers le paiement</button>
+
+    <p class="mention-paiement">
+        Le paiement est traité par Stripe, dans un formulaire sécurisé affiché
+        sur cette page. Aucune donnée bancaire n'est transmise à l'association
+        ni conservée par elle.
+    </p>
+{{ form_end(form) }}

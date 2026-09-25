@@ -30,6 +30,7 @@ services:
       SITE_INDEXABLE: ${SITE_INDEXABLE:-0}
       # Compte /admin. Dans un fichier .env lu par Compose, doubler les « $ »
       # du hash (« $$2y$$13$$… »), sinon Compose les interprète.
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
     ports:

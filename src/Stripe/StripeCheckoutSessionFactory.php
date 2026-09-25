@@ -8,9 +8,10 @@ use RuntimeException;
 use Stripe\StripeClient;
 
 /**
- * Implémentation réelle : Stripe Checkout, page hébergée.
+ * Implémentation réelle : Stripe Checkout intégré à la page (`embedded_page`).
  *
- * Aucune donnée bancaire ne transite par nos serveurs (CLAUDE.md §2).
+ * Le formulaire de paiement s'affiche dans un iframe servi par Stripe : aucune
+ * donnée bancaire ne transite par nos serveurs (CLAUDE.md §2).
  * Stripe collecte aussi l'identité et l'adresse du donateur, ce qui évite de
  * les redemander dans notre formulaire et prépare le reçu fiscal.
  */
@@ -22,13 +23,15 @@ final readonly class StripeCheckoutSessionFactory implements CheckoutSessionFact
     ) {
     }
 
-    public function create(int $amountCents, string $currency, string $successUrl, string $cancelUrl): CheckoutSession
+    public function create(int $amountCents, string $currency, string $returnUrl): CheckoutSession
     {
         $session = $this->stripe->checkout->sessions->create([
             'mode' => 'payment',
+            'ui_mode' => 'embedded_page',
             'locale' => 'fr',
-            'success_url' => $successUrl,
-            'cancel_url' => $cancelUrl,
+            // Pas de cancel_url en mode intégré : le donateur qui renonce
+            // reste simplement sur notre page.
+            'return_url' => $returnUrl,
             'billing_address_collection' => 'required',
             'submit_type' => 'donate',
             'line_items' => [[
@@ -41,12 +44,12 @@ final readonly class StripeCheckoutSessionFactory implements CheckoutSessionFact
             ]],
         ]);
 
-        $url = $session->url;
+        $secret = $session->client_secret;
 
-        if (!\is_string($url) || '' === $url) {
-            throw new RuntimeException('Stripe n\'a pas renvoyé d\'URL de paiement.');
+        if (!\is_string($secret) || '' === $secret) {
+            throw new RuntimeException('Stripe n\'a pas renvoyé de secret client.');
         }
 
-        return new CheckoutSession($session->id, $url);
+        return new CheckoutSession($session->id, $secret);
     }
 }

@@ -784,6 +784,38 @@ button.bouton {
     font-size: 0.9375rem;
 }
 
+/* Paiement Stripe intégré : l'iframe prend la largeur disponible, bornée
+   comme le formulaire de montant pour que l'œil ne saute pas d'une étape
+   à l'autre. */
+.paiement {
+    max-width: min(38rem, 100%);
+    margin-top: var(--esp-l);
+}
+
+.paiement:focus {
+    outline: none;
+}
+
+.paiement__etat {
+    color: #555;
+}
+
+/* Réserve la place de l'iframe : évite que le pied de page ne remonte
+   puis redescende pendant le chargement (CLS). */
+.paiement__widget {
+    min-height: 30rem;
+}
+
+.lien-bouton {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--vert);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* -------------------------------------------------------------------- 8. pied */
 
 .pied {

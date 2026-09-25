@@ -17,10 +17,10 @@ final class FakeCheckoutSessionFactory implements CheckoutSessionFactory
 {
     public ?int $dernierMontant = null;
     public ?string $derniereDevise = null;
-    public ?string $derniereUrlSucces = null;
+    public ?string $derniereUrlRetour = null;
     public bool $echoue = false;
 
-    public function create(int $amountCents, string $currency, string $successUrl, string $cancelUrl): CheckoutSession
+    public function create(int $amountCents, string $currency, string $returnUrl): CheckoutSession
     {
         if ($this->echoue) {
             throw new RuntimeException('Stripe indisponible.');
@@ -28,13 +28,13 @@ final class FakeCheckoutSessionFactory implements CheckoutSessionFactory
 
         $this->dernierMontant = $amountCents;
         $this->derniereDevise = $currency;
-        $this->derniereUrlSucces = $successUrl;
+        $this->derniereUrlRetour = $returnUrl;
 
         // Identifiant aléatoire, et non un compteur d'instance : le client de
         // test redémarre le noyau avant chaque requête, un compteur repartirait
         // donc de zéro et violerait l'unicité de stripe_session_id.
         $id = 'cs_test_'.bin2hex(random_bytes(8));
 
-        return new CheckoutSession($id, 'https://checkout.stripe.test/'.$id);
+        return new CheckoutSession($id, $id.'_secret_test');
     }
 }

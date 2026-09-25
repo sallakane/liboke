@@ -13,7 +13,8 @@ namespace App\Stripe;
 interface CheckoutSessionFactory
 {
     /**
-     * @param int $amountCents montant déjà validé côté serveur
+     * @param int    $amountCents montant déjà validé côté serveur
+     * @param string $returnUrl   page où Stripe renvoie le donateur après le paiement
      */
-    public function create(int $amountCents, string $currency, string $successUrl, string $cancelUrl): CheckoutSession;
+    public function create(int $amountCents, string $currency, string $returnUrl): CheckoutSession;
 }

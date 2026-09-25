@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
@@ -35,6 +35,8 @@ final class DonationController extends AbstractController
         private readonly LoggerInterface $logger,
         #[Autowire(service: 'limiter.donation_checkout')]
         private readonly RateLimiterFactoryInterface $limiter,
+        #[Autowire(env: 'STRIPE_PUBLISHABLE_KEY')]
+        private readonly string $clePublique,
     ) {
     }
 
@@ -45,65 +47,68 @@ final class DonationController extends AbstractController
     }
 
     /**
-     * Crée la session Stripe puis redirige vers la page hébergée.
+     * Valide le montant et crée la session Stripe intégrée.
+     *
+     * Appelée en `fetch` par le contrôleur Stimulus « don » (Accept JSON) :
+     * la réponse porte alors le secret client, ou le formulaire réaffiché
+     * avec ses erreurs. Envoyée comme un formulaire classique, elle réaffiche
+     * la page avec le paiement déjà ouvert.
      */
     #[Route('/don/checkout', name: 'app_donation_checkout', methods: ['POST'])]
     public function checkout(Request $request): Response
     {
+        $json = 'json' === $request->getPreferredFormat();
         $saisie = new DonationInput();
         $form = $this->createForm(DonationType::class, $saisie);
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->rendu($this->page(), $form);
+            return $this->echec($form, $json);
         }
 
         $centimes = $this->resoudreMontant($saisie, $form);
 
         if (null === $centimes) {
-            return $this->rendu($this->page(), $form);
+            return $this->echec($form, $json);
         }
 
         if (!$this->limiter->create($request->getClientIp() ?? 'anonyme')->consume()->isAccepted()) {
             $this->addFlash('erreur', 'Trop de tentatives depuis cette connexion. Merci de réessayer plus tard.');
 
-            return $this->rendu($this->page(), $form);
+            return $this->echec($form, $json);
         }
 
         try {
-            // URLs construites depuis l'hôte canonique, pas depuis l'en-tête
+            // URL construite depuis l'hôte canonique, pas depuis l'en-tête
             // Host de la requête : Stripe doit renvoyer le donateur sur le
             // vrai domaine, quel que soit le proxy en amont.
             $session = $this->checkout->create(
                 $centimes,
                 $this->amounts->currency,
                 $this->canonical->forPath('/don/merci'),
-                $this->canonical->forPath('/don/annule'),
             );
         } catch (Throwable $erreur) {
             $this->logger->error('Création de session Stripe impossible.', ['exception' => $erreur]);
             $this->addFlash('erreur', 'Le paiement en ligne est momentanément indisponible. Merci de réessayer dans quelques instants.');
 
-            return $this->rendu($this->page(), $form);
+            return $this->echec($form, $json);
         }
 
-        // Le don est enregistré « en attente » avant la redirection : seul le
-        // webhook le passera à « payé » (CLAUDE.md §10).
+        // Le don est enregistré « en attente » dès la création de la session :
+        // seul le webhook le passera à « payé » (CLAUDE.md §10).
         $this->donations->save(new Donation($session->id, $centimes, $this->amounts->currency));
 
-        return new RedirectResponse($session->url, Response::HTTP_SEE_OTHER);
+        if ($json) {
+            return new JsonResponse(['clientSecret' => $session->clientSecret]);
+        }
+
+        return $this->rendu($this->page(), $form, $session->clientSecret);
     }
 
     #[Route('/don/merci', name: 'app_donation_thanks', methods: ['GET'])]
     public function thanks(): Response
     {
         return $this->render('donation/merci.html.twig', ['noindex' => true]);
-    }
-
-    #[Route('/don/annule', name: 'app_donation_cancel', methods: ['GET'])]
-    public function cancel(): Response
-    {
-        return $this->render('donation/annule.html.twig', ['noindex' => true]);
     }
 
     /**
@@ -162,12 +167,32 @@ final class DonationController extends AbstractController
     /**
      * @param FormInterface<DonationInput> $form
      */
-    private function rendu(Page $page, FormInterface $form): Response
+    private function rendu(Page $page, FormInterface $form, ?string $secretClient = null): Response
     {
         return $this->render('donation/index.html.twig', [
             'page' => $page,
             'form' => $form,
             'montants' => $this->amounts,
+            'cle_publique' => $this->clePublique,
+            'secret_client' => $secretClient,
         ]);
+    }
+
+    /**
+     * Réaffiche le formulaire avec ses erreurs : la page entière, ou
+     * seulement le fragment de formulaire pour le contrôleur Stimulus.
+     *
+     * @param FormInterface<DonationInput> $form
+     */
+    private function echec(FormInterface $form, bool $json): Response
+    {
+        if (!$json) {
+            return $this->rendu($this->page(), $form);
+        }
+
+        return new JsonResponse(
+            ['form' => $this->renderView('donation/_formulaire.html.twig', ['form' => $form, 'montants' => $this->amounts])],
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+        );
     }
 }

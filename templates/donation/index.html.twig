@@ -10,29 +10,47 @@
             {{ page.html|raw }}
         </div>
 
-        {% for message in app.flashes('erreur') %}
-            <p class="alerte alerte--erreur" role="alert">{{ message }}</p>
-        {% endfor %}
+        {#
+          Deux étapes sur la même page, pilotées par le contrôleur Stimulus
+          « don » : choix du montant, puis formulaire de paiement Stripe
+          intégré (Embedded Checkout). Stripe.js n'est chargé qu'à la seconde
+          étape, quand le donateur a choisi de payer.
 
-        {{ form_start(form, {action: path('app_donation_checkout'), attr: {class: 'formulaire formulaire--don'}}) }}
-            {% if form.vars.submitted and not form.vars.valid %}
-                <p class="alerte alerte--erreur" role="alert">
-                    Le formulaire contient des erreurs. Merci de vérifier le montant.
+          `secret_client` n'est présent que si le formulaire a été envoyé sans
+          passer par le contrôleur : le paiement s'ouvre alors au chargement.
+        #}
+        <div class="don"
+             data-controller="don"
+             data-don-cle-publique-value="{{ cle_publique }}"
+             {% if secret_client %}data-don-secret-value="{{ secret_client }}"{% endif %}>
+
+            <div data-don-target="formulaire"{{ secret_client ? ' hidden' }}>
+                {% include 'donation/_formulaire.html.twig' %}
+            </div>
+
+            <section class="paiement" data-don-target="paiement" aria-labelledby="paiement-titre" tabindex="-1"{{ secret_client ? '' : ' hidden' }}>
+                <h2 id="paiement-titre">Paiement de votre don</h2>
+
+                <p class="paiement__etat" data-don-target="etat" role="status">
+                    Chargement du formulaire de paiement sécurisé…
                 </p>
-            {% endif %}
 
-            {# Erreurs de niveau formulaire : jeton CSRF invalide, par exemple. #}
-            {{ form_errors(form) }}
+                <div class="paiement__widget" data-don-target="widget"></div>
 
-            {{ form_row(form.preset) }}
-            {{ form_row(form.custom) }}
+                <p>
+                    <button type="button" class="lien-bouton" data-action="don#modifier">
+                        ‹ Modifier le montant
+                    </button>
+                </p>
+            </section>
 
-            <button type="submit" class="bouton">Faire un don</button>
-
-            <p class="mention-paiement">
-                Le paiement est traité par Stripe sur une page sécurisée.
-                Aucune donnée bancaire n'est conservée par l'association.
-            </p>
-        {{ form_end(form) }}
+            <noscript>
+                <p class="alerte alerte--erreur">
+                    Le paiement en ligne nécessite JavaScript. Merci de l'activer
+                    dans votre navigateur, ou de nous contacter pour faire un don
+                    par un autre moyen.
+                </p>
+            </noscript>
+        </div>
     </article>
 {% endblock %}

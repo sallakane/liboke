@@ -5,7 +5,7 @@ seo:
   title: "Politique de confidentialité — Association LIBOKÉ"
   description: "Comment l'association LIBOKÉ collecte et conserve les données personnelles issues du formulaire de contact et des dons, et comment exercer vos droits."
 template: default
-updated: "2026-09-24"
+updated: "2026-09-25"
 ---
 
 L'association LIBOKÉ attache une grande importance à la protection de vos
@@ -51,8 +51,9 @@ utilisée, de façon temporaire, pour limiter l'envoi abusif de messages.
   comptable de l'association, au regard de ses obligations légales.
 
 **Aucune donnée de carte bancaire n'est collectée ni conservée par
-l'association.** Vos coordonnées bancaires sont saisies directement sur une
-page sécurisée de Stripe, qui les traite pour son propre compte.
+l'association.** Vos coordonnées bancaires sont saisies dans un formulaire
+sécurisé fourni par Stripe et affiché sur la page de don ; elles sont
+transmises directement à Stripe, qui les traite pour son propre compte.
 
 ## Destinataires et sous-traitants
 
@@ -94,13 +95,18 @@ réclamation à la Commission nationale de l'informatique et des libertés
 Ce site n'utilise **aucun cookie de mesure d'audience, de publicité ni de
 réseau social**, et aucun outil de suivi.
 
-Un cookie technique de session peut être déposé lorsque vous envoyez un
-formulaire, pour afficher le message de confirmation qui suit. Il est
-strictement nécessaire au fonctionnement du service et disparaît à la
-fermeture de votre navigateur. Il ne requiert donc pas votre consentement.
+Des cookies techniques peuvent être déposés lorsque vous envoyez un
+formulaire : un cookie de session, pour afficher le message de confirmation
+qui suit, et un cookie de protection contre la falsification de requêtes.
+Ils sont strictement nécessaires au fonctionnement du service et
+disparaissent à la fermeture de votre navigateur. Ils ne requièrent donc pas
+votre consentement.
 
-La page de paiement, hébergée par Stripe, dépose ses propres cookies,
-nécessaires à la sécurité des paiements et régis par la politique de Stripe.
+Lorsque vous passez au paiement d'un don, le formulaire sécurisé de Stripe
+est chargé dans la page et dépose ses propres cookies, nécessaires à la
+prévention de la fraude et à la sécurité des paiements, régis par la
+politique de Stripe. Il n'est pas chargé tant que vous ne demandez pas à
+payer.
 
 ## Sécurité
 
@@ -113,4 +119,4 @@ par mot de passe.
 Cette politique peut être mise à jour, notamment en cas d'évolution du site.
 La date de dernière mise à jour figure ci-dessous.
 
-*Dernière mise à jour : 24 septembre 2026.*
+*Dernière mise à jour : 25 septembre 2026.*
