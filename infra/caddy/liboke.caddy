@@ -1,0 +1,20 @@
+# LIBOKÉ — bloc à AJOUTER dans /etc/caddy/Caddyfile, à la suite des autres
+# sites. Ne jamais remplacer le fichier entier : il sert d'autres projets.
+#
+# Avant de recharger, valider (une erreur de syntaxe ne coupe alors rien) :
+#   sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+#   sudo systemctl reload caddy
+#
+# Le port doit correspondre à LIBOKE_HTTP_PORT de .env.prod.local.
+
+www.association-liboke.com {
+	redir https://association-liboke.com{uri} permanent
+}
+
+association-liboke.com {
+	# Caddy transmet X-Forwarded-For / -Proto / -Host, que Symfony croit
+	# (config/packages/framework.yaml, when@prod). La compression est faite
+	# par le conteneur. Pas de réécriture du corps : la signature du webhook
+	# Stripe reste valide.
+	reverse_proxy 127.0.0.1:8090
+}

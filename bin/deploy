@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Déploiement / mise à jour en PRODUCTION, après « git pull ».
+#
+#   bin/deploy
+#
+# 1. sauvegarde la base si elle existe déjà (les migrations vont tourner) ;
+# 2. construit l'image ;
+# 3. redémarre les conteneurs (le conteneur php applique les migrations) ;
+# 4. vérifie que le site répond, comme le Caddy de l'hôte l'interrogera.
+# N'agit que sur le projet Compose « liboke » : les autres projets du VPS ne
+# sont pas concernés.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+lire() { grep -E "^$1=" .env.prod.local | tail -1 | cut -d= -f2- | tr -d "'\""; }
+PORT="$(lire LIBOKE_HTTP_PORT)"; PORT="${PORT:-8090}"
+URL="$(lire CANONICAL_URL)"
+HOTE="${URL#*://}"
+
+for variable in APP_SECRET POSTGRES_PASSWORD CANONICAL_URL; do
+    [ -n "$(lire "$variable")" ] || { echo "$variable est vide dans .env.prod.local." >&2; exit 1; }
+done
+
+if [ -n "$(bin/prod ps -q database 2>/dev/null)" ]; then
+    echo "→ Sauvegarde préalable de la base…"
+    bin/backup-db
+fi
+
+echo "→ Construction de l'image…"
+bin/prod build --pull
+
+echo "→ Démarrage…"
+bin/prod up -d --remove-orphans --wait php
+
+bin/prod up -d worker
+
+echo "→ Vérification sur 127.0.0.1:$PORT (comme le Caddy de l'hôte)…"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Host: $HOTE" -H 'X-Forwarded-Proto: https' "http://127.0.0.1:$PORT/")
+if [ "$CODE" != "200" ]; then
+    echo "ÉCHEC : l'accueil répond $CODE. Journaux : bin/prod logs --tail=100 php" >&2
+    exit 1
+fi
+
+bin/prod ps
+echo "Déploiement terminé : $URL"

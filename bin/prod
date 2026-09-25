@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Docker Compose de PRODUCTION : toutes les commandes passent par ici.
+#
+#   bin/prod ps | bin/prod logs -f php | bin/prod exec php bin/console …
+#
+# Charge .env.prod.local (interpolation ET variables des conteneurs) et
+# empile compose.yaml + compose.prod.yaml. Sans ce fichier, Compose lirait
+# le .env versionné et démarrerait avec des mots de passe par défaut.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+if [ ! -f .env.prod.local ]; then
+    echo "Fichier .env.prod.local absent : cp infra/prod.env.example .env.prod.local, puis le remplir." >&2
+    exit 1
+fi
+
+exec docker compose --env-file .env.prod.local -f compose.yaml -f compose.prod.yaml "$@"

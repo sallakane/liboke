@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# TEST de restauration : restaure une sauvegarde dans une base TEMPORAIRE,
+# compte les lignes des tables métier, puis supprime cette base.
+# La base de production n'est jamais touchée.
+#
+#   bin/restore-db /var/backups/liboke/liboke-20260925-031700.dump
+#
+# Une sauvegarde qui n'a jamais été restaurée n'est pas une sauvegarde : à
+# lancer après la mise en place, puis régulièrement. La restauration RÉELLE
+# (base de production écrasée) est décrite pas à pas dans
+# docs/deploiement-vps.md, volontairement sans script.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+SAUVEGARDE="${1:?Usage : bin/restore-db <fichier.dump>}"
+[ -f "$SAUVEGARDE" ] || { echo "Introuvable : $SAUVEGARDE" >&2; exit 1; }
+
+BASE_TEST="liboke_restauration_test"
+psql() { bin/prod exec -T database sh -c "PGOPTIONS=--client-min-messages=warning psql -v ON_ERROR_STOP=1 -U \"\$POSTGRES_USER\" -d postgres -qtA -c \"$1\""; }
+
+psql "DROP DATABASE IF EXISTS $BASE_TEST;"
+psql "CREATE DATABASE $BASE_TEST;"
+trap 'psql "DROP DATABASE IF EXISTS '"$BASE_TEST"';" >/dev/null' EXIT
+
+bin/prod exec -T database sh -c "pg_restore -U \"\$POSTGRES_USER\" -d $BASE_TEST --no-owner --exit-on-error" < "$SAUVEGARDE"
+
+echo "Restauration réussie dans une base temporaire. Contenu :"
+for table in donation stripe_event contact_message doctrine_migration_versions; do
+    n=$(bin/prod exec -T database sh -c "psql -U \"\$POSTGRES_USER\" -d $BASE_TEST -qtA -c 'SELECT COUNT(*) FROM $table'")
+    printf '  %-28s %s ligne(s)\n' "$table" "$n"
+done
+echo "Base temporaire supprimée."

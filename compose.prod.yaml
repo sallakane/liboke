@@ -1,45 +1,80 @@
-# PRODUCTION — SQUELETTE INCOMPLET.
+# PRODUCTION — VPS partagé avec d'autres projets derrière le Caddy de l'hôte.
 #
-# CLAUDE.md §12 : « à compléter ultérieurement par le développeur avant le
-# déploiement sur le VPS ». Ne pas ajouter ici de configuration VPS (reverse
-# proxy, DNS, certificats, CI/CD) sans instruction explicite.
+# Procédure complète : docs/deploiement-vps.md. Toujours passer par bin/prod,
+# qui charge .env.prod.local et empile compose.yaml + ce fichier :
+#   bin/prod up -d
 #
-# Usage prévu :
-#   docker compose -f compose.yaml -f compose.prod.yaml up -d
-#
-# Reste à décider / écrire avant le premier déploiement :
-#   - stratégie de sauvegarde de la base (pg_dump quotidien, rétention,
-#     restauration testée) — le registre des dons n'est pas reconstituable ;
-#   - worker Messenger supervisé (messenger:consume async scheduler_default) :
-#     il envoie les e-mails ET déclenche les tâches planifiées (purge RGPD) ;
-#   - secrets (APP_SECRET, STRIPE_*, MAILER_DSN) : source et injection ;
-#   - CANONICAL_URL (hôte réel) et SITE_INDEXABLE=1 : sans elles le site
-#     reste en « Disallow: / » et les canoniques pointent vers localhost ;
-#   - hôte canonique et certificats.
+# Règles de cohabitation (ne jamais gêner les autres projets du VPS) :
+#   - aucun port public : seul le site est publié, et sur 127.0.0.1
+#     uniquement ; le Caddy de l'hôte termine le HTTPS et relaie ;
+#   - projet Compose nommé « liboke » : conteneurs, réseau et volume préfixés,
+#     sans collision avec les autres projets ;
+#   - mémoire bornée et journaux Docker tournants : pas de disque ni de RAM
+#     accaparés.
+
+name: liboke
+
+x-journaux: &journaux
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+# Variables de l'application : secrets et réglages de production, lus dans
+# .env.prod.local (jamais versionné ; modèle : infra/prod.env.example).
+x-application: &application
+  env_file:
+    - .env.prod.local
+  image: liboke-php-prod
+  build:
+    context: .
+    target: frankenphp_prod
+  restart: unless-stopped
+  <<: *journaux
 
 services:
   php:
-    build:
-      context: .
-      target: frankenphp_prod
+    <<: *application
     environment:
       APP_ENV: prod
-      APP_SECRET: ${APP_SECRET}
-      MAILER_DSN: ${MAILER_DSN}
-      CANONICAL_URL: ${CANONICAL_URL}
-      SITE_INDEXABLE: ${SITE_INDEXABLE:-0}
-      # Compte /admin. Dans un fichier .env lu par Compose, doubler les « $ »
-      # du hash (« $$2y$$13$$… »), sinon Compose les interprète.
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
-      ADMIN_USERNAME: ${ADMIN_USERNAME}
-      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      # HTTP simple sur le port 80 du conteneur : le HTTPS est assuré par le
+      # Caddy de l'hôte. Sans cela, le Caddy interne de FrankenPHP tenterait
+      # d'obtenir lui-même des certificats.
+      SERVER_NAME: ":80"
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-      - target: 443
-        published: 443
-        protocol: tcp
-      - target: 443
-        published: 443
-        protocol: udp
+      - "127.0.0.1:${LIBOKE_HTTP_PORT:-8090}:80"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # E-mails (remerciements, contact) et tâches planifiées (purge RGPD).
+  # S'arrête toutes les heures pour repartir d'une mémoire propre :
+  # « restart » le relance aussitôt.
+  worker:
+    <<: *application
+    command: ["php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--memory-limit=128M"]
+    environment:
+      APP_ENV: prod
+      SKIP_MIGRATIONS: "1"
+      # Même valeur que le service php (compose.yaml), qui n'est pas hérité ici.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-liboke}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-liboke}?serverVersion=${POSTGRES_VERSION:-16}&charset=utf8
+    # Pas de serveur web dans ce conteneur : la sonde de l'image n'a pas lieu d'être.
+    healthcheck:
+      disable: true
+    depends_on:
+      php:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  database:
+    restart: unless-stopped
+    <<: *journaux
+    deploy:
+      resources:
+        limits:
+          memory: 512M

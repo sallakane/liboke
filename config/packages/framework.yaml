@@ -23,6 +23,16 @@ framework:
     #esi: true
     #fragments: true
 
+when@prod:
+    framework:
+        # En production, le site tourne derrière le Caddy de l'hôte, partagé
+        # avec d'autres projets (docs/deploiement-vps.md) : il termine le HTTPS
+        # et relaie en HTTP. Sans ces en-têtes de confiance, Symfony verrait
+        # du HTTP et l'IP du proxy : redirection canonique en boucle, /admin
+        # refusé (HTTPS exigé), limiteurs de débit communs à tous les visiteurs.
+        trusted_proxies: '%env(TRUSTED_PROXIES)%'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host', 'x-forwarded-port']
+
 when@test:
     framework:
         test: true

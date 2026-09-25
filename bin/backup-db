@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Sauvegarde de la base de PRODUCTION (registre des dons : non reconstituable).
+#
+#   bin/backup-db                      # dans /var/backups/liboke
+#   BACKUP_DIR=/ailleurs bin/backup-db
+#
+# Format personnalisé de pg_dump (compressé, restaurable table par table).
+# Chaque sauvegarde est relue par pg_restore --list avant d'être conservée.
+# Rotation : les sauvegardes de plus de BACKUP_RETENTION_DAYS jours (14 par
+# défaut) sont supprimées. Planification : voir docs/deploiement-vps.md.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+DESTINATION="${BACKUP_DIR:-/var/backups/liboke}"
+RETENTION="${BACKUP_RETENTION_DAYS:-14}"
+
+mkdir -p "$DESTINATION"
+chmod 700 "$DESTINATION"
+umask 077
+
+FICHIER="$DESTINATION/liboke-$(date +%Y%m%d-%H%M%S).dump"
+
+bin/prod exec -T database sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' > "$FICHIER.partiel"
+
+# Une sauvegarde illisible ne doit pas remplacer les bonnes par la rotation.
+if ! bin/prod exec -T database pg_restore --list < "$FICHIER.partiel" > /dev/null; then
+    rm -f "$FICHIER.partiel"
+    echo "ÉCHEC : sauvegarde illisible, rien n'a été conservé." >&2
+    exit 1
+fi
+
+mv "$FICHIER.partiel" "$FICHIER"
+find "$DESTINATION" -name 'liboke-*.dump' -mtime +"$RETENTION" -delete
+
+echo "Sauvegarde : $FICHIER ($(du -h "$FICHIER" | cut -f1))"

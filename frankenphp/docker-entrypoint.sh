@@ -25,7 +25,9 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 			exit 1
 		fi
 
-		if [ -n "$(find ./migrations -iname '*.php' -print -quit 2>/dev/null)" ]; then
+		# SKIP_MIGRATIONS : le worker Messenger démarre avec la même image ; seul
+		# le conteneur php migre, sinon deux migrations concurrentes.
+		if [ -z "$SKIP_MIGRATIONS" ] && [ -n "$(find ./migrations -iname '*.php' -print -quit 2>/dev/null)" ]; then
 			php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 		fi
 	fi
