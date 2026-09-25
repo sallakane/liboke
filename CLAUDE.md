@@ -357,13 +357,14 @@ Base : structure de **`dunglas/symfony-docker`** (FrankenPHP).
 - Montage en lecture seule du thème Drupal sur `/drupal-theme` (voir §3).
 - Accès : `https://localhost`.
 
-**Prod (`compose.prod.yaml`)** — *à compléter ultérieurement par le développeur avant le déploiement sur le VPS.* Pour l'instant :
+**Prod (`compose.prod.yaml`)** — VPS **partagé** avec d'autres projets (`sunu-cagnotte`, `rapport-generator`) derrière le **Caddy de l'hôte**, qui termine le HTTPS. Procédure complète : **`docs/deploiement-vps.md`**.
 
-- Prévoir l'image multi-stage (`frankenphp_prod`) avec `APP_ENV=prod`, `composer install --no-dev --optimize-autoloader`, `asset-map:compile`, `cache:warmup`, worker mode.
-- Prévoir `doctrine:migrations:migrate --no-interaction` à l'étape de déploiement, et un worker Messenger (`messenger:consume async`) supervisé.
-- **Sauvegarde de la base à prévoir** (`pg_dump` quotidien, rétention, restauration testée) : le registre des dons n'est pas reconstituable depuis le site. À cadrer avec le développeur.
-- **Variables à positionner au déploiement** : `CANONICAL_URL` (hôte réel, choix www / sans-www à arrêter) et `SITE_INDEXABLE=1`. Elles pilotent les URLs canoniques, le sitemap, `robots.txt`, l'en-tête `X-Robots-Tag` et la redirection 301 vers l'hôte canonique. Une recette reste en `SITE_INDEXABLE=0`.
-- Ne pas écrire de configuration VPS (reverse proxy, DNS, certificats, CI/CD) sans instruction explicite.
+- Services `php` (FrankenPHP worker, HTTP simple, publié sur `127.0.0.1:${LIBOKE_HTTP_PORT:-8090}` uniquement), `worker` (Messenger + planificateur) et `database` (non exposée). Projet Compose nommé `liboke`, mémoire bornée, journaux tournants.
+- Toujours passer par `bin/prod` (charge `.env.prod.local`, jamais versionné ; modèle `infra/prod.env.example`). Déploiement et mise à jour : `git pull && bin/deploy` (sauvegarde préalable, build, migrations au démarrage du conteneur php, vérification).
+- Proxys de confiance : `framework.trusted_proxies` en `when@prod` (`TRUSTED_PROXIES=private_ranges`). Indispensable derrière le Caddy de l'hôte.
+- Sauvegardes : `bin/backup-db` (quotidien par cron, relu avant conservation, rétention 14 jours) et `bin/restore-db` (restauration de **test** dans une base temporaire). Copie hors serveur à décider.
+- **Variables à positionner au déploiement** : `CANONICAL_URL` (hôte réel) et `SITE_INDEXABLE` (`0` tant que le contenu est provisoire, `1` à l'ouverture). Elles pilotent les URLs canoniques, le sitemap, `robots.txt`, l'en-tête `X-Robots-Tag` et la redirection 301 vers l'hôte canonique.
+- **Ne jamais** remplacer `/etc/caddy/Caddyfile` (on y ajoute `infra/caddy/liboke.caddy`), ni lancer de commande Docker globale (`prune`, `down -v`) qui toucherait les autres projets. Pas de CI/CD sans instruction explicite.
 
 ## 13. Makefile (commandes attendues)
 
@@ -420,7 +421,7 @@ make worker      # messenger:consume async -vv
 8. ✅ **Phase 7** — Espace admin minimal (lecture seule, compte unique en env), purge RGPD, pages Mentions légales et Politique de confidentialité. *Textes légaux livrés avec des `[À COMPLÉTER]` à faire remplir par l'association.*
 9. ✅ **Phase 8a** — Optimisations performance/accessibilité structurelles, audit Lighthouse sur build de prod (99-100 partout), tests.
    **Phase 8b** — Intégration du contenu réel (textes, photos via `make images`), audit final `make audit`.
-10. **Phase 9** — Préparation prod Docker, sauvegardes base (en attente des instructions du développeur).
+10. ✅ **Phase 9** — Préparation prod pour le VPS partagé (compose, scripts, sauvegardes), répétée en local. *Le déploiement lui-même est mené sur le VPS, par une session dédiée, avec `docs/deploiement-vps.md`.*
 
 *Phases ultérieures non planifiées :* génération des reçus fiscaux CERFA, don mensuel récurrent. Le modèle de données les anticipe (§10), le code non.
 

@@ -3,7 +3,7 @@
 Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
 Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
 
-> **État :** phases 0 à 8a livrées. Le parcours de don a été validé de bout en bout
+> **État :** phases 0 à 8a livrées, production préparée (phase 9). Le parcours de don a été validé de bout en bout
 > en mode test Stripe ; le branchement du compte de production reste à faire.
 > Détails dans [`docs/avancement.md`](docs/avancement.md).
 
@@ -99,8 +99,19 @@ Pour une photo dans une page : la déposer dans `assets/images/contenu/`, lancer
 Les informations globales (coordonnées, réseaux sociaux, pied de page) sont dans `content/site.yaml`.
 Les textes encore provisoires sont marqués `[À COMPLÉTER]`.
 
+## Production
+
+VPS partagé, derrière le Caddy de l'hôte. Procédure complète : [`docs/deploiement-vps.md`](docs/deploiement-vps.md).
+
+```bash
+git pull && bin/deploy     # sauvegarde, build, migrations, vérification
+bin/prod ps                # toutes les commandes Compose de prod passent par bin/prod
+bin/backup-db              # sauvegarde (planifiée chaque nuit par cron)
+```
+
 ## Documentation
 
 - [`CLAUDE.md`](CLAUDE.md) — cahier des charges : il fait foi
 - [`docs/avancement.md`](docs/avancement.md) — état d'avancement, décisions prises, pièges, point de reprise
+- [`docs/deploiement-vps.md`](docs/deploiement-vps.md) — déploiement et exploitation sur le VPS
 - [`docs/theme-audit.md`](docs/theme-audit.md) — audit du thème Drupal `libokev2` d'origine

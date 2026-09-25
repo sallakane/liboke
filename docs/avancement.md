@@ -48,7 +48,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
 | 8b | Intégration du contenu réel, audit final | En attente des textes et photos de l'association |
-| 9 | Préparation production, sauvegardes | À faire |
+| 9 | Préparation production, sauvegardes | **Préparée et répétée en local** ; déploiement à mener sur le VPS (`docs/deploiement-vps.md`) |
 
 **Volume actuel** : 52 classes PHP, 21 fichiers de test (134 tests), 28 gabarits Twig, 3 migrations, 8 pages de contenu, 922 lignes de CSS.
 **Tables** : `contact_message`, `donation`, `stripe_event`, `messenger_messages`, `doctrine_migration_versions`.
@@ -129,6 +129,14 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 - `worker.Caddyfile` réclamait `Runtime\FrankenPhpSymfony\Runtime`, non installé et inutile depuis Symfony 7.4 : toutes les requêtes échouaient en mode worker.
 - `asset-map:compile` absent du build : CSS et JS auraient répondu 404.
 
+## 4 ter. Phase 9 — préparation de la production
+
+VPS partagé : un Caddy sur l'hôte (systemd) sert `sunu-cagnotte` (Docker, 127.0.0.1:8080) et `rapport-generator` (systemd, 127.0.0.1:8001). Liboke s'y ajoute sur le même modèle que `sunu-cagnotte` : projet Compose isolé, publié sur `127.0.0.1:8090`, HTTPS par le Caddy de l'hôte.
+
+Livré : `compose.prod.yaml` complet (php, worker, database), `infra/prod.env.example`, `infra/caddy/liboke.caddy`, `bin/prod`, `bin/deploy`, `bin/backup-db`, `bin/restore-db`, proxys de confiance en prod, `SKIP_MIGRATIONS` pour le worker, procédure `docs/deploiement-vps.md`.
+
+**Répétition locale (2026-09-25)** : un conteneur Caddy jouait le Caddy de l'hôte en HTTPS devant `bin/deploy`. Vérifié : aucune boucle de redirection, canonique en `https://`, `/admin` en HTTPS avec connexion, webhook Stripe non redirigé (400 sans signature), `noindex` tant que `SITE_INDEXABLE=0`, migrations appliquées une fois, worker actif, sauvegarde puis restauration de test, second `bin/deploy` (mise à jour) avec sauvegarde préalable.
+
 ## 5. Pièges rencontrés, à ne pas redécouvrir
 
 - **Protection CSRF sans état (Symfony 8)** — le champ caché contient le marqueur littéral `csrf-token`, la vraie valeur serait posée par un contrôleur Stimulus que nous ne chargeons pas. Symfony retombe alors sur la vérification d'`Origin`/`Referer`, ce qui **fonctionne sans JavaScript** (vérifié au navigateur). Conséquence pour les tests : un POST doit envoyer `_token = 'csrf-token'` **et** un en-tête `Referer`.
@@ -142,6 +150,8 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Nom de projet Compose** — `compose.prod.yaml` déclare `name: liboke`, comme la stack de dev locale. Pour répéter la prod en local, **toujours** `COMPOSE_PROJECT_NAME=liboke-prodtest`, sinon `bin/prod down -v` viserait la base de développement.
+- **`Caddyfile.patch` de rapport-generator** — il se présente comme le Caddyfile complet du VPS : le recopier effacerait le bloc liboke.
 - **Limiteurs de débit en test** — leurs compteurs vivent dans le cache de fichiers et survivent d'une exécution à l'autre : chaque test qui en dépend doit les remettre à zéro (sinon test instable après quelques lancements rapprochés).
 - **Caddyfile intégré à l'image** — il n'est pas monté en volume en dev : toute modification demande `docker compose build php`.
 - **`#[Cache]` s'applique aussi à la 404** rendue pour le même contrôleur : d'où `ContentCache::apply()` sur la réponse réussie.
@@ -189,4 +199,4 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 1. **Stripe** (§3) : parcours de don et remboursement complet validés en mode test ; restent le remboursement partiel et le branchement du compte de production.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
 3. **Phase 8b**, dès réception du contenu : déposer les photos dans `assets/images/` (ou `assets/images/contenu/` pour le Markdown), `make images`, écrire les textes et les `alt`, puis `make audit`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
-4. **Phase 9** : préparation de la production (compose, secrets, sauvegardes) sur instruction du développeur. L'image `frankenphp_prod` se construit et sert le site depuis la phase 8a.
+4. **Déploiement sur le VPS** : `git pull` sur le VPS, puis une session Claude dédiée suit `docs/deploiement-vps.md` (état des lieux, secrets, `bin/deploy`, bloc Caddy, webhook Stripe, sauvegardes planifiées). Premier déploiement en `SITE_INDEXABLE=0` et clés Stripe de test.
