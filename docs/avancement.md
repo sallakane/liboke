@@ -68,6 +68,8 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 | Remboursement complet (`stripe refunds create`) | `charge.refunded` reçu (200), don passé à `refunded`, rejeu sans effet |
 | Espace `/admin` | Connexion, liste, filtres, export CSV vérifiés par le développeur |
 
+Le 2026-09-25, le paiement est passé en **Embedded Checkout** : la création d'une session `embedded_page` a été vérifiée contre Stripe (secret client renvoyé). Le webhook et l'idempotence sont inchangés.
+
 **Constats :**
 - Le compte de test est en **API Stripe 2020-03-02** (très ancienne). Les événements arrivent dans ce format, et le gestionnaire les lit correctement, adresse comprise. Le compte de production aura sa propre version : à vérifier au branchement de l'endpoint, qui peut être créé avec une version d'API explicite.
 - `stripe_customer_id` reste vide : en mode `payment`, Checkout ne crée pas de client Stripe. Sans conséquence au lancement ; à revoir avec le don mensuel (Customer Portal).
@@ -86,12 +88,13 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 | **Bootstrap 3** | Abandonné, CSS moderne écrit à la main | Il n'était pas dans le dépôt (chargé par CDN), en fin de vie, et imposait jQuery. Audit §2 et §9 |
 | **Base de données** | Cantonnée au transactionnel | Le contenu éditorial reste en Markdown versionné |
 | **Comptes utilisateurs** | Aucun | Le Customer Portal de Stripe couvrira la gestion du don mensuel |
-| **Stripe Checkout** | Page hébergée, pas Elements | Aucun JS de paiement sur nos pages, conformité PCI réduite au SAQ-A |
+| **Stripe Checkout** | **Intégré à la page** (`ui_mode: embedded_page`) depuis le 2026-09-25, plus la page hébergée | Choix du développeur : le donateur ne quitte pas le site. Reste SAQ-A (iframe Stripe). Stripe.js chargé à la demande depuis `js.stripe.com`. Pas de page d'annulation (`/don/annule` supprimée) |
+| **JavaScript** | Autorisé pour le fonctionnement et l'ergonomie | La règle « le site fonctionne sans JS » a été levée par le développeur le 2026-09-25. Le contenu reste rendu côté serveur |
 | **Données du donateur** | Collectées par Stripe, pas par notre formulaire | Moins de données personnelles chez nous, adresse disponible pour le futur reçu |
 | **Menu principal** | Piloté par le front matter des pages (`menu:`) | Le pied de page, lui, est listé dans `content/site.yaml` |
 | **Indexation** | `SITE_INDEXABLE` + `CANONICAL_URL`, pas `APP_ENV` | Une recette tourne en `prod` sans devoir être indexée |
 | **Cache du contenu** | Court-circuité quand `kernel.debug` | Sinon modifier un `.md` n'aurait aucun effet visible |
-| **Stimulus** | Installé mais **pas chargé** | 45 Ko pour zéro contrôleur. Décommenter l'import dans `assets/app.js` au premier besoin |
+| **Stimulus** | Chargé ; contrôleurs en `stimulusFetch: 'lazy'` | Le contrôleur `don` n'est téléchargé que sur `/nous-soutenir`. Active aussi `csrf_protection_controller.js` (jeton CSRF en double soumission) |
 | **Reçus fiscaux** | Champs réservés, génération non implémentée | Interdiction explicite d'en promettre un, verrouillée par un test |
 | **Compte admin** | Fournisseur maison `App\Security\AdminUserProvider`, pas le fournisseur `memory` | `memory` n'accepte pas une variable d'environnement comme identifiant. Variables vides = connexion impossible |
 | **Pare-feu** | Limité à `^/admin` | Le reste du site n'ouvre aucune session : pages cachables, webhook hors pare-feu (§10 règle 5) |
@@ -115,6 +118,7 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Stripe renomme ses paramètres** — l'Embedded Checkout s'appelle désormais `ui_mode: 'embedded_page'` (et non `embedded`), le script est `js.stripe.com/dahlia/stripe.js` et la fonction `createEmbeddedCheckoutPage()`. Vérifier la doc Stripe courante plutôt que sa mémoire.
 - **Stripe CLI** — les versions récentes exigent `--events` ; et le relais doit viser `http://php`, pas `https://php` : dans le réseau Docker, FrankenPHP ne sert l'hôte `php` qu'en HTTP (échec TLS « internal error » sinon).
 - **`docker compose run`** recrée les services dont il dépend (ici `php`) avec les variables du shell courant : sans `HTTP_PORT=8080 …`, le conteneur repart sur 80/443. Préférer `docker compose exec stripe-cli stripe …`.
 - **Connexion dans les tests** — `loginUser()` doit recevoir l'utilisateur du vrai fournisseur : Symfony compare le hash à chaque requête et déconnecte si un utilisateur « nu » est passé.

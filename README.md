@@ -13,7 +13,8 @@ Site vitrine à contenu statique (Markdown versionné), formulaire de contact et
 - Rendu **Twig côté serveur**, assets via **AssetMapper** (ni Node ni bundler)
 - Contenu éditorial en **Markdown + front matter** dans `content/`, jamais en base
 - **PostgreSQL 16 + Doctrine**, réservés aux données transactionnelles (dons, événements Stripe, messages de contact)
-- **Stripe Checkout** (page hébergée par Stripe) + webhooks signés et idempotents
+- **Stripe Embedded Checkout** (formulaire de paiement Stripe intégré à la page) + webhooks signés et idempotents
+- **Stimulus** pour l'interactivité, contrôleurs chargés à la demande
 - **Messenger** (transport `doctrine`) pour les emails asynchrones
 - PHPUnit, PHPStan, PHP-CS-Fixer
 

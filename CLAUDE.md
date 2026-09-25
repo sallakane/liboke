@@ -34,15 +34,15 @@ Le nouveau site est un **site vitrine à contenu statique**, enrichi d'un **modu
 | Serveur | **FrankenPHP** (image basée sur `dunglas/symfony-docker`) | HTTPS automatique, HTTP/2-3, worker mode en prod, même image dev/prod |
 | Rendu | **Twig côté serveur (SSR)** | HTML complet dès la première réponse = SEO optimal. Drupal utilise aussi Twig : les templates du thème se portent quasi directement |
 | Assets | **AssetMapper** (+ `symfonycasts/sass-bundle` si le thème utilise du SCSS) | Pas de Node, pas de bundler, assets versionnés et cachables |
-| Interactivité | **Stimulus** (Symfony UX), Turbo optionnel | JS minimal, amélioration progressive, le site fonctionne sans JS |
+| Interactivité | **Stimulus** (Symfony UX), Turbo optionnel | JavaScript autorisé dès qu'il sert le fonctionnement ou l'ergonomie. Le **contenu** reste rendu côté serveur (SEO) ; contrôleurs chargés à la demande (`stimulusFetch: 'lazy'`) pour préserver les performances |
 | Contenu | Markdown + front matter (`league/commonmark`, `symfony/yaml`) | Contenu éditorial versionné, hors base |
 | Formulaire | Symfony Form + Mailer + RateLimiter + honeypot | Anti-spam sans captcha tiers |
 | Base de données | **PostgreSQL 16 + Doctrine ORM** | Uniquement les données transactionnelles (§10). Le contenu éditorial reste en fichiers |
-| Paiement | **Stripe Checkout** (`stripe/stripe-php`) + webhooks signés | Page hébergée par Stripe : aucun JS de paiement sur nos pages (cible Lighthouse préservée), conformité PCI réduite au SAQ-A |
+| Paiement | **Stripe Embedded Checkout** (`ui_mode: embedded_page`, `stripe/stripe-php`) + webhooks signés | Le formulaire de paiement Stripe s'affiche **dans notre page** (iframe) : le donateur ne quitte pas le site, la carte est saisie chez Stripe, conformité PCI réduite au SAQ-A. Stripe.js chargé depuis `js.stripe.com` (obligation Stripe), uniquement au passage au paiement |
 | Asynchrone | **Messenger**, transport `doctrine` | Emails hors du cycle requête ; webhook Stripe qui répond vite |
 | Qualité | PHPUnit, PHPStan (niveau max raisonnable), PHP-CS-Fixer | |
 
-**Interdits :** SPA (React/Vue/Next), rendu côté client du contenu, EasyAdmin, dépendances CDN externes pour les assets critiques, **table `user` / comptes donateurs**, et surtout **tout transit ou stockage d'un numéro de carte bancaire sur nos serveurs** (Stripe Elements côté client est écarté au profit de Checkout hébergé).
+**Interdits :** SPA (React/Vue/Next), rendu côté client du contenu, EasyAdmin, dépendances CDN externes pour les assets critiques (seule exception : Stripe.js, que Stripe impose de charger depuis `js.stripe.com`), **table `user` / comptes donateurs**, et surtout **tout transit ou stockage d'un numéro de carte bancaire sur nos serveurs** (le Payment Element, champs de carte dans notre propre formulaire, est écarté au profit de l'Embedded Checkout).
 
 > Doctrine n'est plus interdit, mais reste **cantonné au transactionnel**. Si une idée implique de mettre du contenu éditorial en base, c'est qu'elle sort du périmètre : en discuter avant.
 
@@ -230,7 +230,7 @@ Le contenu réel sera fourni plus tard : créer des pages avec un **contenu prov
 - Redirection 301 vers l'hôte canonique (`https://association-liboke.com`, choix www/non-www à fixer en prod).
 - Si les anciennes URLs Drupal sont connues (ex. `/node/12`, alias), prévoir une table de redirections 301 dans `config/redirects.yaml`.
 - Pages 404/500 personnalisées, au design du site, avec le bon code HTTP.
-- `/nous-soutenir` est une page de contenu **indexable** ; `/don/merci`, `/don/annule` et tout `/admin` sont en `noindex` et exclus du sitemap.
+- `/nous-soutenir` est une page de contenu **indexable** ; `/don/merci` et tout `/admin` sont en `noindex` et exclus du sitemap.
 - **`/stripe/webhook` doit être exclu de la redirection 301 vers l'hôte canonique.** Un 301 casse la vérification de signature. Même exclusion pour le CSRF et pour le firewall de sécurité.
 
 ## 8. Performance et accessibilité
@@ -258,16 +258,17 @@ Cibles Lighthouse (mobile) : **≥ 95** en Performance, SEO, Accessibilité et B
 ### Principe
 
 **Stripe est le système de référence du paiement. La base locale est un registre, pas une caisse.**
-On utilise **Stripe Checkout** : le donateur est redirigé vers une page hébergée par Stripe, saisit sa carte chez Stripe, puis revient. Aucune donnée bancaire ne touche nos serveurs, et aucun JS de paiement n'alourdit nos pages.
+On utilise **Stripe Embedded Checkout** : après avoir choisi son montant, le donateur voit le formulaire de paiement Stripe s'afficher **dans la page `/nous-soutenir`**, sans la quitter. La carte est saisie dans un iframe servi par Stripe : aucune donnée bancaire ne touche nos serveurs. Stripe.js n'est chargé qu'à ce moment-là, pas pour les simples visiteurs de la page.
 
 ### Parcours
 
 | Étape | Route | Détail |
 |---|---|---|
 | Présentation | `GET /nous-soutenir` | Page de contenu Markdown + formulaire de don. **Indexable.** |
-| Création de session | `POST /don/checkout` | Valide le montant côté serveur, crée la session Stripe, redirige (303) vers l'URL Stripe |
-| Retour succès | `GET /don/merci` | `noindex`. Affiche un remerciement **sans jamais affirmer que le paiement est confirmé** : seul le webhook fait foi |
-| Retour annulation | `GET /don/annule` | `noindex`. Message neutre, lien de retour |
+| Création de session | `POST /don/checkout` | Valide le montant côté serveur, crée la session Stripe intégrée. Appelée en `fetch` par le contrôleur Stimulus `don` : renvoie le secret client (JSON), ou le formulaire avec ses erreurs (422). Envoyée classiquement, réaffiche la page avec le paiement ouvert |
+| Retour | `GET /don/merci` | `return_url` de la session. `noindex`. Affiche un remerciement **sans jamais affirmer que le paiement est confirmé** : seul le webhook fait foi |
+
+Pas de page d'annulation : en mode intégré, le donateur qui renonce reste sur `/nous-soutenir` (« Modifier le montant »).
 | Webhook | `POST /stripe/webhook` | Seule source de vérité pour marquer un don comme payé |
 
 ### Règles non négociables
@@ -277,7 +278,7 @@ On utilise **Stripe Checkout** : le donateur est redirigé vers une page héberg
 3. **Idempotence obligatoire.** Stripe réémet ses événements. Avant traitement, insérer l'`event.id` dans `StripeEvent` (index unique) ; une violation de contrainte = événement déjà traité → répondre 200 sans rien refaire. Traitement et insertion dans **la même transaction**.
 4. Le webhook **répond vite** : aucun envoi d'email synchrone, tout passe par Messenger.
 5. La route du webhook est **exclue du CSRF, du firewall de sécurité, de la redirection 301 canonique et du `X-Robots-Tag`** (voir §7).
-6. Les clés Stripe vivent **uniquement en variables d'environnement** (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`). Jamais dans le dépôt, jamais dans un template, jamais dans un log.
+6. Les clés Stripe vivent **uniquement en variables d'environnement** (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY`). Les deux premières sont secrètes : jamais dans le dépôt, jamais dans un template, jamais dans un log. La clé publique `pk_…` est, elle, faite pour figurer dans la page.
 7. `RateLimiter` sur `POST /don/checkout` (création de sessions en masse = coût et bruit).
 
 ### Événements traités
@@ -415,7 +416,7 @@ make worker      # messenger:consume async -vv
 4. ✅ **Phase 3** — Couche contenu (`PageRepository`, Markdown, `site.yaml`), pages et menu dynamiques.
 5. ✅ **Phase 4** — SEO complet (meta, JSON-LD, sitemap, robots, redirections, pages d'erreur).
 6. ✅ **Phase 5** — Formulaire de contact (envoi + persistance).
-7. ⚠️ **Phase 6** — Dons Stripe : page « Nous soutenir », Checkout, webhook signé et idempotent, emails de remerciement. *Parcours validé en mode test le 2026-09-24 ; remboursement et compte de production restent à faire avant toute clé live (`docs/avancement.md` §3).*
+7. ⚠️ **Phase 6** — Dons Stripe : page « Nous soutenir », Embedded Checkout (paiement intégré à la page depuis le 2026-09-25), webhook signé et idempotent, emails de remerciement. *Parcours validé en mode test le 2026-09-24 ; remboursement et compte de production restent à faire avant toute clé live (`docs/avancement.md` §3).*
 8. ✅ **Phase 7** — Espace admin minimal (lecture seule, compte unique en env), purge RGPD, pages Mentions légales et Politique de confidentialité. *Textes légaux livrés avec des `[À COMPLÉTER]` à faire remplir par l'association.*
 9. **Phase 8** — Optimisations performance/accessibilité, audit Lighthouse, tests.
 10. **Phase 9** — Préparation prod Docker, sauvegardes base (en attente des instructions du développeur).
