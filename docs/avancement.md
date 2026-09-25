@@ -68,7 +68,7 @@ Parcours réel de bout en bout, clés de test dans `.env.local`, relais `make st
 | Remboursement complet (`stripe refunds create`) | `charge.refunded` reçu (200), don passé à `refunded`, rejeu sans effet |
 | Espace `/admin` | Connexion, liste, filtres, export CSV vérifiés par le développeur |
 
-Le 2026-09-25, le paiement est passé en **Embedded Checkout** : la création d'une session `embedded_page` a été vérifiée contre Stripe (secret client renvoyé). Le webhook et l'idempotence sont inchangés.
+Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € payé dans le formulaire intégré par le développeur, webhook reçu (200), don passé à `paid`, remerciement envoyé. Le webhook et l'idempotence sont inchangés.
 
 **Constats :**
 - Le compte de test est en **API Stripe 2020-03-02** (très ancienne). Les événements arrivent dans ce format, et le gestionnaire les lit correctement, adresse comprise. Le compte de production aura sa propre version : à vérifier au branchement de l'endpoint, qui peut être créé avec une version d'API explicite.
@@ -118,6 +118,7 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : la création d'
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Worker en dev** — sans `--no-debug`, il plante en ~7 min (mémoire épuisée par les traces Doctrine du profiler). `make worker` le passe désormais.
 - **Stripe renomme ses paramètres** — l'Embedded Checkout s'appelle désormais `ui_mode: 'embedded_page'` (et non `embedded`), le script est `js.stripe.com/dahlia/stripe.js` et la fonction `createEmbeddedCheckoutPage()`. Vérifier la doc Stripe courante plutôt que sa mémoire.
 - **Stripe CLI** — les versions récentes exigent `--events` ; et le relais doit viser `http://php`, pas `https://php` : dans le réseau Docker, FrankenPHP ne sert l'hôte `php` qu'en HTTP (échec TLS « internal error » sinon).
 - **`docker compose run`** recrée les services dont il dépend (ici `php`) avec les variables du shell courant : sans `HTTP_PORT=8080 …`, le conteneur repart sur 80/443. Préférer `docker compose exec stripe-cli stripe …`.

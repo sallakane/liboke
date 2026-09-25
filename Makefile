@@ -41,8 +41,10 @@ cc: ## Vide le cache Symfony
 assets: ## Compile la carte des assets (vérification, AssetMapper sert à la volée en dev)
 	@$(CONSOLE) asset-map:compile
 
+# --no-debug : en dev, Doctrine garde la trace de chaque requête pour le profiler ;
+# le worker interrogeant la base chaque seconde saturait la mémoire en quelques minutes.
 worker: ## Consomme la file Messenger (e-mails) et les tâches planifiées (purge RGPD)
-	@$(CONSOLE) messenger:consume async scheduler_default -vv
+	@$(CONSOLE) messenger:consume async scheduler_default -vv --no-debug --memory-limit=128M
 
 admin-password: ## Génère le hash du mot de passe administrateur (ADMIN_PASSWORD_HASH)
 	@$(CONSOLE) security:hash-password --empty-salt 'Symfony\Component\Security\Core\User\InMemoryUser'
