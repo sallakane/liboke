@@ -46,10 +46,11 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 5 | Formulaire de contact, anti-spam, purge RGPD | **Livrée** |
 | 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement partiel à traiter) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
-| 8 | Performance, accessibilité, Lighthouse | À faire |
+| 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
+| 8b | Intégration du contenu réel, audit final | En attente des textes et photos de l'association |
 | 9 | Préparation production, sauvegardes | À faire |
 
-**Volume actuel** : 47 classes PHP, 18 fichiers de test, 28 gabarits Twig, 3 migrations, 8 pages de contenu, 888 lignes de CSS.
+**Volume actuel** : 52 classes PHP, 21 fichiers de test (134 tests), 28 gabarits Twig, 3 migrations, 8 pages de contenu, 922 lignes de CSS.
 **Tables** : `contact_message`, `donation`, `stripe_event`, `messenger_messages`, `doctrine_migration_versions`.
 
 ---
@@ -105,6 +106,29 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 
 ---
 
+## 4 bis. Phase 8a — ce qui est en place
+
+**Audit Lighthouse mobile sur build de production (2026-09-25)** — `make audit` :
+
+| Page | Perf | A11y | Prat. | SEO | LCP | CLS |
+|---|---|---|---|---|---|---|
+| `/` | 99 | 100 | 100 | 100 | 2,0 s | 0 |
+| pages internes (7) | 99-100 | 100 | 100 | 100 | 1,7-1,9 s | 0 |
+
+**Images** — `make images` génère, pour chaque JPG/PNG de `assets/images/`, des variantes WebP + format d'origine à 480/800/1200/1600 px (jamais agrandies) dans `assets/images/variantes/`, **versionnées** (la prod n'a pas besoin de GD). Dans les gabarits : `{{ image('photo.jpg', 'Texte alternatif', {sizes: '…', prioritaire: true}) }}`. Dans le Markdown : `![Texte alternatif](images/contenu/photo.jpg)` devient automatiquement un `<picture>` responsive. Un test échoue si une image est ajoutée ou modifiée sans relancer `make images`.
+
+**Autres réglages** :
+- Cache HTTP `public, max-age=600, s-maxage=3600` sur l'accueil, les pages de contenu, le sitemap et robots.txt (`App\Http\ContentCache`) ; jamais sur les 404, les pages à formulaire ni `/admin`. Assets : `immutable`, un an, uniquement sur les réponses 2xx (Caddyfile).
+- Menu mobile : vrai bouton de divulgation (`aria-expanded`, Échap) au lieu de la case à cocher ; replié avant le premier affichage grâce à la classe `js` posée dans le `<head>` (pas de CLS).
+- Contraste AA : le doré du thème ne passait ni sur blanc (baseline d'accueil, 1,6:1) ni sur le vert du pied (4,2:1). Nouvelles teintes `--or-sur-blanc: #9b6908` et `--or-sur-vert: #f9d081`.
+- Les deux graisses de police sont préchargées (le gras arrivait tard et décalait le texte), ainsi que le fond de l'en-tête (LCP des pages internes).
+
+**Bugs de production trouvés en construisant l'image `frankenphp_prod`, corrigés** :
+- `.dockerignore` excluait `**/*.md`, donc **tout le contenu** : le site de prod aurait été vide.
+- `symfony/monolog-bundle` était en `require-dev` alors que le bundle est activé partout : l'image de prod ne démarrait pas.
+- `worker.Caddyfile` réclamait `Runtime\FrankenPhpSymfony\Runtime`, non installé et inutile depuis Symfony 7.4 : toutes les requêtes échouaient en mode worker.
+- `asset-map:compile` absent du build : CSS et JS auraient répondu 404.
+
 ## 5. Pièges rencontrés, à ne pas redécouvrir
 
 - **Protection CSRF sans état (Symfony 8)** — le champ caché contient le marqueur littéral `csrf-token`, la vraie valeur serait posée par un contrôleur Stimulus que nous ne chargeons pas. Symfony retombe alors sur la vérification d'`Origin`/`Referer`, ce qui **fonctionne sans JavaScript** (vérifié au navigateur). Conséquence pour les tests : un POST doit envoyer `_token = 'csrf-token'` **et** un en-tête `Referer`.
@@ -118,6 +142,9 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Caddyfile intégré à l'image** — il n'est pas monté en volume en dev : toute modification demande `docker compose build php`.
+- **`#[Cache]` s'applique aussi à la 404** rendue pour le même contrôleur : d'où `ContentCache::apply()` sur la réponse réussie.
+- **Lighthouse local** — Node 18.19 suffit pour `lighthouse@12`. Auditer le build de prod, jamais le dev (profiler, rechargement à chaud).
 - **Worker en dev** — sans `--no-debug`, il plante en ~7 min (mémoire épuisée par les traces Doctrine du profiler). `make worker` le passe désormais.
 - **Stripe renomme ses paramètres** — l'Embedded Checkout s'appelle désormais `ui_mode: 'embedded_page'` (et non `embedded`), le script est `js.stripe.com/dahlia/stripe.js` et la fonction `createEmbeddedCheckoutPage()`. Vérifier la doc Stripe courante plutôt que sa mémoire.
 - **Stripe CLI** — les versions récentes exigent `--events` ; et le relais doit viser `http://php`, pas `https://php` : dans le réseau Docker, FrankenPHP ne sert l'hôte `php` qu'en HTTP (échec TLS « internal error » sinon).
@@ -160,4 +187,5 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 
 1. **Stripe** (§3) : parcours de don et remboursement complet validés en mode test ; restent le remboursement partiel et le branchement du compte de production.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
-3. **Phase 8** : performance et accessibilité, audit Lighthouse (cibles ≥ 95), y compris sur les pages `/admin` pour l'accessibilité.
+3. **Phase 8b**, dès réception du contenu : déposer les photos dans `assets/images/` (ou `assets/images/contenu/` pour le Markdown), `make images`, écrire les textes et les `alt`, puis `make audit`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
+4. **Phase 9** : préparation de la production (compose, secrets, sauvegardes) sur instruction du développeur. L'image `frankenphp_prod` se construit et sert le site depuis la phase 8a.

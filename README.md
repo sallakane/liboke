@@ -3,7 +3,7 @@
 Refonte du site [association-liboke.com](https://association-liboke.com), qui remplace l'ancien Drupal.
 Site vitrine à contenu statique (Markdown versionné), formulaire de contact et dons en ligne via Stripe Checkout.
 
-> **État :** phases 0 à 7 livrées. Le parcours de don a été validé de bout en bout
+> **État :** phases 0 à 8a livrées. Le parcours de don a été validé de bout en bout
 > en mode test Stripe ; le branchement du compte de production reste à faire.
 > Détails dans [`docs/avancement.md`](docs/avancement.md).
 
@@ -54,6 +54,8 @@ Les secrets locaux (clés Stripe de test, etc.) vont dans `.env.local`, qui n'es
 | `make migration` / `make migrate` | Générer / appliquer les migrations Doctrine |
 | `make worker` | Consommer la file Messenger et les tâches planifiées |
 | `make admin-password` | Générer le hash du mot de passe de l'espace `/admin` |
+| `make images` | Générer les variantes WebP et responsives des images (à committer) |
+| `make audit` | Audit Lighthouse mobile sur un build de production local (Node.js et Chrome requis) |
 | `make stripe` | Relayer les webhooks Stripe en local (nécessite `STRIPE_API_KEY`) |
 
 ## Espace d'administration
@@ -90,6 +92,9 @@ updated: "2026-09-20"
 
 Contenu en **Markdown**.
 ```
+
+Pour une photo dans une page : la déposer dans `assets/images/contenu/`, lancer `make images`, puis l'insérer avec
+`![Description de la photo](images/contenu/photo.jpg)`. Elle est servie en WebP, à la bonne taille selon l'écran.
 
 Les informations globales (coordonnées, réseaux sociaux, pied de page) sont dans `content/site.yaml`.
 Les textes encore provisoires sont marqués `[À COMPLÉTER]`.

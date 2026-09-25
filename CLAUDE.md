@@ -418,7 +418,8 @@ make worker      # messenger:consume async -vv
 6. ✅ **Phase 5** — Formulaire de contact (envoi + persistance).
 7. ⚠️ **Phase 6** — Dons Stripe : page « Nous soutenir », Embedded Checkout (paiement intégré à la page depuis le 2026-09-25), webhook signé et idempotent, emails de remerciement. *Parcours validé en mode test le 2026-09-24 ; remboursement et compte de production restent à faire avant toute clé live (`docs/avancement.md` §3).*
 8. ✅ **Phase 7** — Espace admin minimal (lecture seule, compte unique en env), purge RGPD, pages Mentions légales et Politique de confidentialité. *Textes légaux livrés avec des `[À COMPLÉTER]` à faire remplir par l'association.*
-9. **Phase 8** — Optimisations performance/accessibilité, audit Lighthouse, tests.
+9. ✅ **Phase 8a** — Optimisations performance/accessibilité structurelles, audit Lighthouse sur build de prod (99-100 partout), tests.
+   **Phase 8b** — Intégration du contenu réel (textes, photos via `make images`), audit final `make audit`.
 10. **Phase 9** — Préparation prod Docker, sauvegardes base (en attente des instructions du développeur).
 
 *Phases ultérieures non planifiées :* génération des reçus fiscaux CERFA, don mensuel récurrent. Le modèle de données les anticipe (§10), le code non.
