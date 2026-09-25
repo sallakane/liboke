@@ -1,6 +1,6 @@
 # État d'avancement — site association LIBOKÉ
 
-> Dernière mise à jour : **2026-09-24**.
+> Dernière mise à jour : **2026-09-25** (premier déploiement sur le VPS).
 > Dépôt : `git@github.com:sallakane/liboke.git`, branche `main`.
 > Documents liés : `CLAUDE.md` (cahier des charges, fait foi), `docs/theme-audit.md` (phase 0).
 
@@ -48,7 +48,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
 | 8b | Intégration du contenu réel, audit final | En attente des textes et photos de l'association |
-| 9 | Préparation production, sauvegardes | **Préparée et répétée en local** ; déploiement à mener sur le VPS (`docs/deploiement-vps.md`) |
+| 9 | Préparation production, sauvegardes | **Déployée sur le VPS le 2026-09-25** (site fermé par mot de passe, clés Stripe de test à poser) — voir §4 quater |
 
 **Volume actuel** : 52 classes PHP, 21 fichiers de test (134 tests), 28 gabarits Twig, 3 migrations, 8 pages de contenu, 922 lignes de CSS.
 **Tables** : `contact_message`, `donation`, `stripe_event`, `messenger_messages`, `doctrine_migration_versions`.
@@ -137,6 +137,26 @@ Livré : `compose.prod.yaml` complet (php, worker, database), `infra/prod.env.ex
 
 **Répétition locale (2026-09-25)** : un conteneur Caddy jouait le Caddy de l'hôte en HTTPS devant `bin/deploy`. Vérifié : aucune boucle de redirection, canonique en `https://`, `/admin` en HTTPS avec connexion, webhook Stripe non redirigé (400 sans signature), `noindex` tant que `SITE_INDEXABLE=0`, migrations appliquées une fois, worker actif, sauvegarde puis restauration de test, second `bin/deploy` (mise à jour) avec sauvegarde préalable.
 
+## 4 quater. Déploiement sur le VPS — 2026-09-25
+
+En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0.1:8090`, bloc ajouté à la fin de `/etc/caddy/Caddyfile`). Vérifié : HTTPS Let's Encrypt, `www.` → domaine nu (301), `http://` → `https://`, `/admin` → `/admin/connexion`, webhook 400 sans signature (pas de 301), `robots.txt` en `Disallow: /`, `X-Robots-Tag: noindex`. Les sites voisins répondent comme avant.
+
+- Sauvegardes : `/var/backups/liboke`, cron de `deploy` à 3 h 05, journal `/var/log/liboke-backup.log`. Première sauvegarde restaurée avec succès dans une base temporaire.
+- Sauvegardes du Caddyfile : `/etc/caddy/Caddyfile.bak.2026-09-25-*-avant-liboke` (et `-avant-basicauth-liboke`).
+- **Site fermé au public** par un `basic_auth` Caddy (identifiant/mot de passe), sauf `/stripe/webhook`. Il n'est **pas** dans `infra/caddy/liboke.caddy` : le hash ne vit que dans `/etc/caddy/Caddyfile`. Pour ouvrir le site, retirer les lignes `@liboke_protege` et `basic_auth` du bloc, valider, recharger.
+- VPS plus peuplé que prévu : outre `sunu-cagnotte` (8080, 8009) et `rapport-generator` (8001), tournent `intranet-bceao` (8082) + Keycloak (8083), `maisonbrute-app` (8084), `simulateur` (8085, `api.zonage.sallakane.cloud`). 2 CPU, 7,8 Go de RAM, **pas de swap**.
+- En root, `~` vaut `/root` : les commandes données au développeur utilisent des chemins absolus et `su - deploy -c '…'` pour les commandes Docker de liboke.
+
+### Reste à faire sur la production
+
+1. **Compte admin** : générer le hash (`docker run --rm -it --entrypoint php liboke-php-prod bin/console security:hash-password`), le mettre dans `.env.prod.local` (`ADMIN_PASSWORD_HASH='…'`), `bin/prod up -d`, puis **vérifier la connexion** (s'assurer que les `$` du hash ne sont pas interpolés par Compose).
+2. **Clés Stripe de test** (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`) dans `.env.prod.local`, puis `bin/prod up -d`.
+3. **Webhook Stripe** (mode test) : endpoint `https://association-liboke.org/stripe/webhook`, événements `checkout.session.completed` et `charge.refunded` ; secret `whsec_…` dans `STRIPE_WEBHOOK_SECRET` ; don de test `4242…` et contrôle « Payé » dans `/admin/dons`.
+4. **E-mails** : `MAILER_DSN=null:` (rien ne part). Choisir un SMTP, configurer SPF/DKIM/DMARC sur le domaine.
+5. **Copie des sauvegardes hors du VPS** : destination à décider.
+6. **Ouverture au public** : retirer le `basic_auth`, puis `SITE_INDEXABLE=1` quand le contenu réel est en ligne (phase 8b).
+7. Plus tard : clés Stripe **live** et endpoint de production, redirections des anciennes URLs Drupal.
+
 ## 5. Pièges rencontrés, à ne pas redécouvrir
 
 - **Protection CSRF sans état (Symfony 8)** — le champ caché contient le marqueur littéral `csrf-token`, la vraie valeur serait posée par un contrôleur Stimulus que nous ne chargeons pas. Symfony retombe alors sur la vérification d'`Origin`/`Referer`, ce qui **fonctionne sans JavaScript** (vérifié au navigateur). Conséquence pour les tests : un POST doit envoyer `_token = 'csrf-token'` **et** un en-tête `Referer`.
@@ -188,8 +208,8 @@ Livré : `compose.prod.yaml` complet (php, worker, database), `infra/prod.env.ex
 
 ### À trancher côté technique
 
-- **Compte admin de production** : `ADMIN_USERNAME` et `ADMIN_PASSWORD_HASH` à injecter dans l'environnement du serveur (`compose.prod.yaml` les attend ; doubler les `$` du hash dans un fichier lu par Compose).
-- **www / sans-www** avant de figer `CANONICAL_URL`.
+- **Compte admin de production** : voir §4 quater, « Reste à faire ».
+- **www / sans-www** : tranché, `www.` redirige vers le domaine nu.
 - Remplacer `logo.svg` par un vrai vectoriel si le client peut en fournir un.
 
 ---
@@ -199,4 +219,4 @@ Livré : `compose.prod.yaml` complet (php, worker, database), `infra/prod.env.ex
 1. **Stripe** (§3) : parcours de don et remboursement complet validés en mode test ; restent le remboursement partiel et le branchement du compte de production.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
 3. **Phase 8b**, dès réception du contenu : déposer les photos dans `assets/images/` (ou `assets/images/contenu/` pour le Markdown), `make images`, écrire les textes et les `alt`, puis `make audit`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
-4. **Déploiement sur le VPS** : `git pull` sur le VPS, puis une session Claude dédiée suit `docs/deploiement-vps.md` (état des lieux, secrets, `bin/deploy`, bloc Caddy, webhook Stripe, sauvegardes planifiées). Premier déploiement en `SITE_INDEXABLE=0` et clés Stripe de test.
+4. **Finir la mise en production** : liste « Reste à faire sur la production » du §4 quater (compte admin, clés et webhook Stripe de test, SMTP, sauvegardes hors VPS, ouverture au public).

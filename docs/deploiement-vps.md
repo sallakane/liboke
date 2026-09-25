@@ -10,7 +10,7 @@
 
 Le VPS héberge d'autres projets en production. Rien de ce qui suit ne doit les interrompre.
 
-1. **Ne jamais toucher aux autres projets** : `sunu-cagnotte` (Docker, port local 8080), `rapport-generator` (systemd, port local 8001), et tout autre projet découvert à l'état des lieux. Pas de `docker compose` dans leurs dossiers, pas d'arrêt de leurs conteneurs ou services.
+1. **Ne jamais toucher aux autres projets** : `sunu-cagnotte` (Docker, ports locaux 8080 et 8009), `rapport-generator` (systemd, 8001), `intranet-bceao` (Docker, 8082, Keycloak 8083), `maisonbrute-app` (Docker, 8084), `simulateur` (Docker, 8085), et tout autre projet découvert à l'état des lieux (relevé du 2026-09-25). Pas de `docker compose` dans leurs dossiers, pas d'arrêt de leurs conteneurs ou services.
 2. **Ne jamais remplacer `/etc/caddy/Caddyfile`** : on y **ajoute** le bloc de liboke. Sauvegarder le fichier avant, et **valider avant de recharger** (§4.5). Un `reload` sur un fichier invalide est refusé par Caddy, mais une validation évite toute surprise.
    ⚠️ `rapport-generator/infra/Caddyfile.patch` se présente comme le « contenu COMPLET » du Caddyfile : le recopier plus tard effacerait liboke. Ne pas l'utiliser.
 3. **Commandes Docker de liboke : toujours via `bin/prod`** (jamais `docker compose` nu). Il cible le projet Compose `liboke` et son fichier de secrets.
