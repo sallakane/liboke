@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Content;
 
+use App\Image\ImageVariants;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
 use League\CommonMark\MarkdownConverter;
@@ -20,7 +22,11 @@ final class MarkdownRenderer
 {
     private readonly MarkdownConverter $converter;
 
-    public function __construct()
+    /**
+     * @param ImageVariants|null $images variantes responsives ; absent dans
+     *                                   les tests unitaires du rendu seul
+     */
+    public function __construct(?ImageVariants $images = null)
     {
         $environment = new Environment([
             'html_input' => 'strip',
@@ -28,6 +34,11 @@ final class MarkdownRenderer
         ]);
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new FrontMatterExtension());
+
+        if (null !== $images) {
+            // Priorité supérieure au rendu d'image du cœur CommonMark (0).
+            $environment->addRenderer(Image::class, new ResponsiveImageRenderer($images), 10);
+        }
 
         $this->converter = new MarkdownConverter($environment);
     }

@@ -53,7 +53,9 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 # Xdebug est installé mais désactivé par défaut (XDEBUG_MODE=off),
 # activable à la volée : XDEBUG_MODE=debug make up
-RUN set -eux; install-php-extensions xdebug
+# GD sert à `make images` (variantes WebP et tailles responsives). Les
+# variantes sont versionnées : la production n'en a pas besoin.
+RUN set -eux; install-php-extensions xdebug gd
 
 COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/conf.d/
 

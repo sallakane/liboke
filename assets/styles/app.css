@@ -161,7 +161,7 @@ main {
     justify-content: center;
     padding: var(--esp-s);
     background-color: var(--vert);
-    background-image: url("../images/bandeau-vert.webp");
+    background-image: url("../images/variantes/bandeau-vert-1023.webp");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

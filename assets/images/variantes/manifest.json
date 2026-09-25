@@ -1,0 +1,94 @@
+{
+    "accueil.jpg": {
+        "largeur": 1600,
+        "hauteur": 1080,
+        "empreinte": "65cee71fa10c1e7294e66e62111c2c55e5efd8b2",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/accueil-480.webp",
+                "800": "images/variantes/accueil-800.webp",
+                "1200": "images/variantes/accueil-1200.webp",
+                "1600": "images/variantes/accueil-1600.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/accueil-480.jpg",
+                "800": "images/variantes/accueil-800.jpg",
+                "1200": "images/variantes/accueil-1200.jpg",
+                "1600": "images/variantes/accueil-1600.jpg"
+            }
+        }
+    },
+    "bandeau-1.jpg": {
+        "largeur": 422,
+        "hauteur": 238,
+        "empreinte": "1864eeb532250c9063aa8be5a1989cc4e2212f9d",
+        "variantes": {
+            "webp": {
+                "422": "images/variantes/bandeau-1-422.webp"
+            },
+            "jpg": {
+                "422": "images/variantes/bandeau-1-422.jpg"
+            }
+        }
+    },
+    "bandeau-2.jpg": {
+        "largeur": 426,
+        "hauteur": 237,
+        "empreinte": "132a70b53f298e86360f2126c30c4e8f6f5838e7",
+        "variantes": {
+            "webp": {
+                "426": "images/variantes/bandeau-2-426.webp"
+            },
+            "jpg": {
+                "426": "images/variantes/bandeau-2-426.jpg"
+            }
+        }
+    },
+    "bandeau-3.jpg": {
+        "largeur": 423,
+        "hauteur": 235,
+        "empreinte": "9ed51c19a6b3e51620231b0df78734b8e976566b",
+        "variantes": {
+            "webp": {
+                "423": "images/variantes/bandeau-3-423.webp"
+            },
+            "jpg": {
+                "423": "images/variantes/bandeau-3-423.jpg"
+            }
+        }
+    },
+    "bandeau-vert.png": {
+        "largeur": 1023,
+        "hauteur": 190,
+        "empreinte": "08116bed1a6da6b35721c4e2616d56f5f10b5e58",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/bandeau-vert-480.webp",
+                "800": "images/variantes/bandeau-vert-800.webp",
+                "1023": "images/variantes/bandeau-vert-1023.webp"
+            },
+            "png": {
+                "480": "images/variantes/bandeau-vert-480.png",
+                "800": "images/variantes/bandeau-vert-800.png",
+                "1023": "images/variantes/bandeau-vert-1023.png"
+            }
+        }
+    },
+    "og-defaut.jpg": {
+        "largeur": 1200,
+        "hauteur": 630,
+        "empreinte": "8bc0ba26719d7ad0ceba906e5367d4b26f2fb398",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/og-defaut-480.webp",
+                "800": "images/variantes/og-defaut-800.webp",
+                "1200": "images/variantes/og-defaut-1200.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/og-defaut-480.jpg",
+                "800": "images/variantes/og-defaut-800.jpg",
+                "1200": "images/variantes/og-defaut-1200.jpg"
+            }
+        }
+    }
+}

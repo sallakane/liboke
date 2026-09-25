@@ -4,6 +4,10 @@ framework:
         paths:
             - assets/
         missing_import_mode: strict
+        # Manifeste de `make images`, lu côté serveur par App\Image\ImageVariants :
+        # rien à servir au navigateur.
+        excluded_patterns:
+            - '*/assets/images/variantes/manifest.json'
 
 when@prod:
     framework:

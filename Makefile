@@ -8,7 +8,7 @@ COMPOSER    = $(PHP_CONT) composer
 CONSOLE     = $(PHP) bin/console
 
 .DEFAULT_GOAL = help
-.PHONY: help build up down logs sh cc test test-db lint fix assets db migration migrate worker stripe install admin-password
+.PHONY: help build up down logs sh cc test test-db lint fix assets db migration migrate worker stripe install admin-password images
 
 help: ## Liste les commandes disponibles
 	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "  \033[32m%-12s\033[0m %s\n", $$1, $$2}'
@@ -37,6 +37,10 @@ install: ## Installe les dépendances Composer
 
 cc: ## Vide le cache Symfony
 	@$(CONSOLE) cache:clear
+
+images: ## Génère les variantes WebP et responsives de assets/images (à committer)
+	@$(CONSOLE) app:images
+	@$(PHP_CONT) sh -c "chown -R $$(id -u):$$(id -g) assets/images/variantes && chmod -R u=rwX,go=rX assets/images/variantes"
 
 assets: ## Compile la carte des assets (vérification, AssetMapper sert à la volée en dev)
 	@$(CONSOLE) asset-map:compile

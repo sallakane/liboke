@@ -24,13 +24,12 @@
         </div>
 
         <div class="accueil__visuel">
-            <picture>
-                <source srcset="{{ asset('images/accueil.webp') }}" type="image/webp">
-                <img src="{{ asset('images/accueil.jpg') }}"
-                     alt="[À COMPLÉTER] Description de la photographie d'accueil"
-                     width="1600" height="1080"
-                     fetchpriority="high" decoding="async">
-            </picture>
+            {# Image principale de l'accueil (LCP) : chargée en priorité.
+               Occupe toute la largeur sur mobile, ~70 % au-delà de 900 px. #}
+            {{ image('accueil.jpg', '[À COMPLÉTER] Description de la photographie d\'accueil', {
+                sizes: '(min-width: 900px) 70vw, 100vw',
+                prioritaire: true,
+            }) }}
         </div>
     </div>
 {% endblock %}
