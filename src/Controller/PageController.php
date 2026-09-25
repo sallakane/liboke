@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Content\PageRepository;
+use App\Http\ContentCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,6 +37,6 @@ final class PageController extends AbstractController
             throw $this->createNotFoundException(\sprintf('Aucune page pour le slug « %s ».', $slug));
         }
 
-        return $this->render(\sprintf('page/%s.html.twig', $page->template), ['page' => $page]);
+        return ContentCache::apply($this->render(\sprintf('page/%s.html.twig', $page->template), ['page' => $page]));
     }
 }

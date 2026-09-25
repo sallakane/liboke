@@ -20,6 +20,10 @@
     --vert-icone: #226b54;
     --or: #ffc24d;
     --or-doux: #f7c563;
+    /* Variantes du doré qui respectent le contraste AA (4,5:1) : le doré du
+       thème ne passe ni sur blanc (1,6:1) ni sur le vert du pied (4,2:1). */
+    --or-sur-blanc: #9b6908;
+    --or-sur-vert: #f9d081;
     --noir: #000;
     --gris-separateur: #666;
     --gris-clair: #f7f7f7;
@@ -216,28 +220,25 @@ main {
     box-shadow: 0 8px 5px -5px var(--gris-separateur) inset;
 }
 
-/* Case à cocher masquée mais focalisable : sert de bascule sans JavaScript. */
-.navigation__case {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-}
-
+/* Bouton de repli : affiché seulement quand JavaScript est actif (classe
+   `js` posée sur <html> dès le <head>). Sans JS, le menu reste déplié. */
 .navigation__bouton {
-    display: flex;
+    display: none;
     align-items: center;
     gap: var(--esp-xs);
+    width: 100%;
     padding: var(--esp-s) var(--esp-m);
+    border: 0;
+    background: none;
     color: var(--blanc);
+    font: inherit;
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
+}
+
+.js .navigation__bouton {
+    display: flex;
 }
 
 .navigation__barres,
@@ -265,15 +266,15 @@ main {
 }
 
 .navigation__liste {
-    display: none;
+    display: flex;
     margin: 0;
     padding: 0;
     list-style: none;
     flex-direction: column;
 }
 
-.navigation__case:checked ~ .navigation__liste {
-    display: flex;
+.js .navigation:not(.navigation--ouverte) .navigation__liste {
+    display: none;
 }
 
 .navigation__lien {
@@ -293,11 +294,12 @@ main {
 }
 
 @media (min-width: 900px) {
-    .navigation__bouton {
+    .js .navigation__bouton {
         display: none;
     }
 
-    .navigation__liste {
+    .navigation__liste,
+    .js .navigation:not(.navigation--ouverte) .navigation__liste {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
@@ -349,7 +351,7 @@ main {
 
 .accueil__baseline {
     margin: 0 0 var(--esp-m);
-    color: var(--or-doux);
+    color: var(--or-sur-blanc);
     font-size: clamp(1.25rem, 3vw, 2rem);
     font-weight: 700;
 }
@@ -843,7 +845,7 @@ button.bouton {
 
 .pied__baseline {
     margin: 0;
-    color: var(--or-doux);
+    color: var(--or-sur-vert);
 }
 
 .pied__titre {

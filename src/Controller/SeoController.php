@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Content\PageRepository;
+use App\Http\ContentCache;
 use App\Seo\CanonicalUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +29,7 @@ final class SeoController extends AbstractController
 
         $response->headers->set('Content-Type', 'application/xml; charset=UTF-8');
 
-        return $response;
+        return ContentCache::apply($response);
     }
 
     #[Route('/robots.txt', name: 'app_robots', methods: ['GET'])]
@@ -41,6 +42,6 @@ final class SeoController extends AbstractController
 
         $response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
 
-        return $response;
+        return ContentCache::apply($response);
     }
 }

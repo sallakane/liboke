@@ -1,18 +1,21 @@
 {#
   Menu principal, construit depuis le front matter des pages (clé « menu »),
   trié par poids. Barre noire du thème, aligné à droite sur grand écran.
-  Le repli mobile fonctionne sans JavaScript (case à cocher masquée + label),
-  conformément à l'exigence « le site fonctionne sans JS » (CLAUDE.md §2).
+
+  Sur mobile, un vrai bouton de divulgation (aria-expanded) replie le menu,
+  piloté par le contrôleur Stimulus « menu ». La classe `js` posée sur <html>
+  dès le <head> replie le menu avant le premier affichage : pas de saut de
+  mise en page. Sans JavaScript, le menu reste simplement déplié.
 #}
 {% set chemin_courant = app.request.pathInfo %}
-<nav class="navigation" aria-label="Navigation principale">
-    <input type="checkbox" id="menu-bascule" class="navigation__case">
-    <label for="menu-bascule" class="navigation__bouton">
+<nav class="navigation" aria-label="Navigation principale" data-controller="menu" data-action="keydown->menu#fermer">
+    <button type="button" class="navigation__bouton" aria-expanded="false" aria-controls="menu-principal"
+            data-menu-target="bouton" data-action="menu#basculer">
         <span class="navigation__barres" aria-hidden="true"></span>
         Menu
-    </label>
+    </button>
 
-    <ul class="navigation__liste">
+    <ul class="navigation__liste" id="menu-principal">
         {% for entree in menu_principal() %}
             {% set actif = entree.isHome ? chemin_courant == '/' : chemin_courant starts with entree.path %}
             <li class="navigation__item">

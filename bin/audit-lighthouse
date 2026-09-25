@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Audit Lighthouse (mobile) sur un build de PRODUCTION local — CLAUDE.md §8.
+#
+# Construit l'image frankenphp_prod, la démarre sur http://localhost:9080
+# (réseau Docker du projet, base de dev), audite chaque page du contenu et
+# affiche les scores. Les rapports JSON complets vont dans var/lighthouse/.
+#
+# Prérequis sur l'hôte : Node.js (npx) et Google Chrome ou Chromium.
+# La stack de dev doit tourner (base de données) : make up.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+PORT="${AUDIT_PORT:-9080}"
+CONTENEUR=liboke-audit
+SORTIE=var/lighthouse
+CHROME="${CHROME_PATH:-$(command -v google-chrome || command -v chromium || true)}"
+
+[ -n "$CHROME" ] || { echo "Chrome ou Chromium introuvable (variable CHROME_PATH)." >&2; exit 1; }
+command -v npx >/dev/null || { echo "npx introuvable : installer Node.js." >&2; exit 1; }
+
+echo "→ Build de l'image de production…"
+docker build -q --target frankenphp_prod -t liboke-php-prod . >/dev/null
+
+RESEAU=$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}' "$(docker compose ps -q database)")
+docker rm -f "$CONTENEUR" >/dev/null 2>&1 || true
+trap 'docker rm -f "$CONTENEUR" >/dev/null 2>&1 || true' EXIT
+
+# SITE_INDEXABLE=1 : sinon le noindex fait (à juste titre) chuter le score SEO.
+docker run -d --name "$CONTENEUR" --network "$RESEAU" -p "$PORT:80" \
+    -e SERVER_NAME=':80' \
+    -e APP_SECRET="$(openssl rand -hex 16)" \
+    -e "DATABASE_URL=postgresql://${POSTGRES_USER:-liboke}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-liboke}?serverVersion=16&charset=utf8" \
+    -e CANONICAL_URL="http://localhost:$PORT" \
+    -e SITE_INDEXABLE=1 \
+    -e MAILER_DSN=smtp://mailer:1025 \
+    -e STRIPE_PUBLISHABLE_KEY=pk_test_audit \
+    liboke-php-prod >/dev/null
+
+for _ in $(seq 30); do curl -sf -o /dev/null "http://localhost:$PORT/" && break; sleep 1; done
+
+mkdir -p "$SORTIE"
+CHEMINS=$(curl -s "http://localhost:$PORT/sitemap.xml" | grep -oE "<loc>[^<]+" | sed "s|<loc>http://localhost:$PORT||")
+
+printf '\n%-32s %5s %5s %5s %5s %7s %6s\n' Page Perf A11y Prat. SEO LCP CLS
+for chemin in $CHEMINS; do
+    nom=$(echo "${chemin:-/}" | tr '/' '_' | sed 's/^_$/accueil/;s/^_//')
+    CHROME_PATH="$CHROME" npx -y lighthouse@12 "http://localhost:$PORT$chemin" --quiet \
+        --output=json --output-path="$SORTIE/$nom.json" \
+        --chrome-flags="--headless=new --no-sandbox" >/dev/null 2>&1 || { echo "échec : $chemin"; continue; }
+    python3 - "$SORTIE/$nom.json" "${chemin:-/}" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1])); c = d['categories']; a = d['audits']
+s = lambda k: round((c[k]['score'] or 0) * 100)
+print(f"{sys.argv[2]:32} {s('performance'):5} {s('accessibility'):5} {s('best-practices'):5} {s('seo'):5} "
+      f"{a['largest-contentful-paint']['displayValue']:>7} {a['cumulative-layout-shift']['displayValue']:>6}")
+PY
+done
+echo -e "\nRapports complets : $SORTIE/*.json (cible : ≥ 95 partout)"

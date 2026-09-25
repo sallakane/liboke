@@ -13,6 +13,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {# Avant toute feuille de style : permet au CSS de replier le menu mobile
+       dès le premier affichage quand JavaScript est actif. #}
+    <script>document.documentElement.classList.add('js');</script>
+
     <title>{% block title %}{{ page ? page.seoTitle : site.name }}{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{{ page ? page.seoDescription : '' }}{% endblock %}">
     <link rel="canonical" href="{% block canonical %}{{ url_canonique(app.request.pathInfo) }}{% endblock %}">
@@ -40,8 +44,16 @@
     <meta name="theme-color" content="#006952">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
 
-    {# Police principale préchargée : elle porte tout le texte de la page. #}
+    {# Les deux graisses sont préchargées (22 Ko chacune) : le gras porte le
+       titre et le menu, au-dessus de la ligne de flottaison. Sans lui, son
+       arrivée tardive décale le texte déjà affiché (CLS). #}
     <link rel="preload" href="{{ asset('fonts/saira-semi-condensed-400.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ asset('fonts/saira-semi-condensed-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+    {# Fond de l'en-tête : image CSS, donc découverte tard par le navigateur,
+       alors qu'elle est l'élément le plus grand des pages internes (LCP).
+       4 Ko : la précharger ne coûte rien. #}
+    <link rel="preload" href="{{ asset('images/variantes/bandeau-vert-1023.webp') }}" as="image" type="image/webp">
 
     {% block stylesheets %}{% endblock %}
 
