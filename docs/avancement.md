@@ -142,6 +142,7 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 - **Pas de filtre `trans`** — `symfony/translation` n'est pas installé : les messages d'erreur de connexion sont construits dans `AdminController`, pas traduits dans le gabarit.
 - **Expressions cron** — `RecurringMessage::cron()` exige `dragonmantank/cron-expression`. On utilise `every('1 day', …, from: '03:17')`.
 - **`InputBag` est invariant pour PHPStan** — `DonationFilter::fromQuery()` attend un `InputBag<string>` ; les tests le construisent via un assistant typé.
+- **Limiteurs de débit en test** — leurs compteurs vivent dans le cache de fichiers et survivent d'une exécution à l'autre : chaque test qui en dépend doit les remettre à zéro (sinon test instable après quelques lancements rapprochés).
 - **Caddyfile intégré à l'image** — il n'est pas monté en volume en dev : toute modification demande `docker compose build php`.
 - **`#[Cache]` s'applique aussi à la 404** rendue pour le même contrôleur : d'où `ContentCache::apply()` sur la réponse réussie.
 - **Lighthouse local** — Node 18.19 suffit pour `lighthouse@12`. Auditer le build de prod, jamais le dev (profiler, rechargement à chaud).

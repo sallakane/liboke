@@ -10,6 +10,7 @@ use App\Security\AdminUserProvider;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -207,6 +208,13 @@ final class AdminControllerTest extends WebTestCase
 
     private function seConnecter(KernelBrowser $client, string $identifiant, string $motDePasse): void
     {
+        // Le limiteur de tentatives stocke ses compteurs dans le cache de
+        // fichiers, qui survit d'une exécution de la suite à l'autre : après
+        // quelques lancements rapprochés, 127.0.0.1 serait bloqué.
+        $limiteurs = $client->getContainer()->get('cache.rate_limiter');
+        self::assertInstanceOf(CacheItemPoolInterface::class, $limiteurs);
+        $limiteurs->clear();
+
         // Même protocole que les autres formulaires : marqueur CSRF littéral
         // et en-tête Referer (protection CSRF sans état de Symfony 8).
         $client->request('POST', '/admin/connexion', [
