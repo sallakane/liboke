@@ -1,4 +1,6 @@
 worker {
 	file ./public/index.php
-	env APP_RUNTIME Runtime\FrankenPhpSymfony\Runtime
+	# Pas d'APP_RUNTIME : depuis Symfony 7.4, symfony/runtime détecte lui-même
+	# le mode worker (variable FRANKENPHP_WORKER posée par FrankenPHP). L'ancien
+	# runtime Runtime\FrankenPhpSymfony\Runtime n'est pas installé.
 }

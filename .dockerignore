@@ -1,4 +1,6 @@
 **/*.md
+# Sauf le contenu éditorial : sans lui, le site de production est vide.
+!content/**/*.md
 **/.DS_Store
 **/.env.*.local
 **/.env.local
@@ -17,3 +19,5 @@
 **/tests/
 **/var/
 **/vendor/
+# Dossier de travail local à la racine (photos brutes), non versionné.
+/images/
