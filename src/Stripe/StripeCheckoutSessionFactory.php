@@ -12,8 +12,10 @@ use Stripe\StripeClient;
  *
  * Le formulaire de paiement s'affiche dans un iframe servi par Stripe : aucune
  * donnée bancaire ne transite par nos serveurs (CLAUDE.md §2).
- * Stripe collecte aussi l'identité et l'adresse du donateur, ce qui évite de
- * les redemander dans notre formulaire et prépare le reçu fiscal.
+ * Formulaire réduit au minimum : e-mail, carte et nom du titulaire. L'adresse
+ * postale n'est pas demandée tant que le reçu fiscal n'existe pas (CLAUDE.md
+ * §10) ; il suffira alors de repasser `billing_address_collection` à
+ * `required`, le webhook sait déjà l'enregistrer.
  */
 final readonly class StripeCheckoutSessionFactory implements CheckoutSessionFactory
 {
@@ -32,7 +34,12 @@ final readonly class StripeCheckoutSessionFactory implements CheckoutSessionFact
             // Pas de cancel_url en mode intégré : le donateur qui renonce
             // reste simplement sur notre page.
             'return_url' => $returnUrl,
-            'billing_address_collection' => 'required',
+            'billing_address_collection' => 'auto',
+            // Carte seule (Apple Pay et Google Pay inclus) : pas de Link, ni
+            // de moyens de paiement locaux qui alourdissent le formulaire.
+            'payment_method_types' => ['card'],
+            // Pas de conversion dans la devise du donateur : euros uniquement.
+            'adaptive_pricing' => ['enabled' => false],
             'submit_type' => 'donate',
             'line_items' => [[
                 'quantity' => 1,

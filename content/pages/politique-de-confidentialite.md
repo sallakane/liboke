@@ -42,8 +42,8 @@ utilisée, de façon temporaire, pour limiter l'envoi abusif de messages.
 
 ### Dons en ligne
 
-- **Données** : nom, adresse électronique, adresse postale, montant et date du
-  don, identifiants techniques de la transaction chez Stripe.
+- **Données** : nom, adresse électronique, pays, montant et date du don,
+  identifiants techniques de la transaction chez Stripe.
 - **Finalités** : enregistrer votre don, vous adresser un courriel de
   remerciement, tenir la comptabilité de l'association.
 - **Base légale** : l'exécution de votre demande de don et le respect des
