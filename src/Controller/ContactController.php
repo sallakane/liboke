@@ -104,7 +104,7 @@ final class ContactController extends AbstractController
                     ->from(new Address($this->expediteur, 'Site association LIBOKÉ'))
                     ->to(...array_map(trim(...), $this->destinataires))
                     ->replyTo(new Address($saisie->email, $saisie->name))
-                    ->subject(\sprintf('[Contact] %s', $saisie->subject))
+                    ->subject(\sprintf('[LIBOKE CONTACT] %s', $saisie->subject))
                     ->htmlTemplate('emails/contact.html.twig')
                     ->textTemplate('emails/contact.txt.twig')
                     ->context(['message' => $message])
