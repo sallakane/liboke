@@ -8,7 +8,7 @@
     <p class="alerte alerte--erreur" role="alert">{{ message }}</p>
 {% endfor %}
 
-{{ form_start(form, {action: path('app_donation_checkout'), attr: {class: 'formulaire formulaire--don', 'data-action': 'don#envoyer'}}) }}
+{{ form_start(form, {action: path('app_donation_checkout'), attr: {class: 'formulaire formulaire--don', 'data-action': 'don#envoyer change->don#choisir'}}) }}
     {% if form.vars.submitted and not form.vars.valid %}
         <p class="alerte alerte--erreur" role="alert">
             Le formulaire contient des erreurs. Merci de vérifier le montant.

@@ -780,6 +780,13 @@ button.bouton {
     font: inherit;
 }
 
+/* « Autre montant » n'apparaît que si cette option est cochée. En CSS pur :
+   pas de clignotement au chargement. Le serveur ignore de toute façon ce
+   champ quand un montant suggéré est choisi. */
+.formulaire--don:has(input[name="donation[preset]"][value="libre"]:not(:checked)) .champ:has(#donation_custom) {
+    display: none;
+}
+
 .mention-paiement {
     margin-top: var(--esp-m);
     color: #555;

@@ -96,6 +96,13 @@ export default class extends Controller {
         }
     }
 
+    // « Autre montant » coché : le champ apparaît (CSS), on y place le curseur.
+    choisir(event) {
+        if (event.target.name === 'donation[preset]' && event.target.value === 'libre' && event.target.checked) {
+            event.currentTarget.querySelector('#donation_custom')?.focus();
+        }
+    }
+
     async afficherPaiement(secret) {
         this.formulaireTarget.hidden = true;
         this.paiementTarget.hidden = false;
