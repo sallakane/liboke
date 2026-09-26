@@ -1,26 +1,58 @@
-<!DOCTYPE html>
-<html lang="fr">
-<body style="font-family: Helvetica, Arial, sans-serif; color: #333;">
-    <h1 style="color: #006952; font-size: 18px;">Merci pour votre don</h1>
+{% extends 'emails/_layout.html.twig' %}
 
-    <p>Bonjour{% if donation.donorName %} {{ donation.donorName }}{% endif %},</p>
+{% block titre %}Merci pour votre don{% endblock %}
 
-    <p>
-        Votre don de <strong>{{ montant }} {{ donation.currency }}</strong> a bien été
-        encaissé le {{ donation.paidAt|date('d/m/Y à H:i') }}. Merci de votre soutien.
+{% block apercu %}Votre don de {{ montant }} € a bien été reçu. Merci pour votre soutien !{% endblock %}
+
+{% block contenu %}
+    <h1 style="margin: 0 0 20px; font-size: 24px; line-height: 1.3; color: #006952;">Merci pour votre don&nbsp;!</h1>
+
+    <p style="margin: 0 0 16px;">Bonjour{% if donation.donorName %} {{ donation.donorName }}{% endif %},</p>
+
+    <p style="margin: 0 0 28px;">
+        Toute l'équipe de l'association LIBOKÉ vous remercie chaleureusement.
+        Votre générosité nous aide à poursuivre nos actions pour l'éducation,
+        l'environnement et la santé.
     </p>
 
-    <p>
-        Référence de votre don : {{ donation.id }}
-    </p>
+    {# Montant mis en avant #}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 28px;">
+        <tr>
+            <td align="center" style="background-color: #fdf6e7; border: 1px solid #f7c563; border-radius: 10px; padding: 24px 16px;">
+                <div style="font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #9b6908;">Votre don</div>
+                <div style="margin-top: 6px; font-size: 40px; line-height: 1.1; font-weight: bold; color: #006952;">{{ montant }}&nbsp;€</div>
+            </td>
+        </tr>
+    </table>
+
+    {# Récapitulatif #}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 28px; font-size: 14px;">
+        <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #eeeeee; color: #666666;">Date</td>
+            <td align="right" style="padding: 10px 0; border-bottom: 1px solid #eeeeee;">{{ donation.paidAt|date('d/m/Y à H:i', 'Europe/Paris') }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #eeeeee; color: #666666;">Type</td>
+            <td align="right" style="padding: 10px 0; border-bottom: 1px solid #eeeeee;">Don ponctuel</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px 0; color: #666666;">Référence</td>
+            <td align="right" style="padding: 10px 0; font-family: Consolas, Menlo, monospace; font-size: 12px; color: #666666;">{{ donation.id }}</td>
+        </tr>
+    </table>
 
     {#
       Aucune mention de reçu fiscal tant que la génération du CERFA n'est pas
       implémentée (CLAUDE.md §10). Ne rien promettre ici.
     #}
 
-    <p style="font-size: 12px; color: #666;">
-        Association LIBOKÉ — Éducation · Environnement · Santé
-    </p>
-</body>
-</html>
+    <p style="margin: 0 0 8px;">Avec toute notre reconnaissance,</p>
+    <p style="margin: 0; font-weight: bold; color: #006952;">L'équipe LIBOKÉ</p>
+{% endblock %}
+
+{% block mention %}
+    <div style="margin-top: 16px; font-size: 12px; color: #999999;">
+        Vous recevez ce message à la suite de votre don en ligne.
+        Le paiement a été traité de façon sécurisée par Stripe&nbsp;; l'association n'a jamais accès à vos données bancaires.
+    </div>
+{% endblock %}

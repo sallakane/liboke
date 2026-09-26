@@ -1,11 +1,20 @@
-Merci pour votre don
+Merci pour votre don !
 
 Bonjour{% if donation.donorName %} {{ donation.donorName }}{% endif %},
 
-Votre don de {{ montant }} {{ donation.currency }} a bien été encaissé le
-{{ donation.paidAt|date('d/m/Y à H:i') }}. Merci de votre soutien.
+Toute l'équipe de l'association LIBOKÉ vous remercie chaleureusement.
+Votre générosité nous aide à poursuivre nos actions pour l'éducation,
+l'environnement et la santé.
 
-Référence de votre don : {{ donation.id }}
+Votre don : {{ montant }} {{ donation.currency }}
+Date : {{ donation.paidAt|date('d/m/Y à H:i', 'Europe/Paris') }}
+Type : don ponctuel
+Référence : {{ donation.id }}
+
+Avec toute notre reconnaissance,
+L'équipe LIBOKÉ
 
 --
-Association LIBOKÉ — Éducation · Environnement · Santé
+{{ site.name }} — {{ site.baseline }}
+Le paiement a été traité de façon sécurisée par Stripe ; l'association n'a
+jamais accès à vos données bancaires.

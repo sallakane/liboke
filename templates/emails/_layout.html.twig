@@ -1,0 +1,62 @@
+{#
+  Gabarit commun des courriels envoyés aux visiteurs.
+  Mise en page en tableaux et styles en ligne : c'est ce que les
+  messageries (Gmail, Outlook…) affichent de façon fiable. Pas d'image :
+  elles sont souvent bloquées par défaut, et le site n'a qu'un logo SVG,
+  que Gmail n'affiche pas.
+#}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{% block titre %}{% endblock %}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f2f2ee; -webkit-text-size-adjust: 100%;">
+    {# Aperçu affiché par la messagerie à côté de l'objet. #}
+    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: transparent;">
+        {% block apercu %}{% endblock %}
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f2f2ee;">
+        <tr>
+            <td align="center" style="padding: 32px 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; font-family: Helvetica, Arial, sans-serif; color: #333333;">
+
+                    {# En-tête aux couleurs du site #}
+                    <tr>
+                        <td align="center" style="background-color: #006952; padding: 32px 24px 28px;">
+                            <div style="font-size: 30px; line-height: 1; font-weight: bold; letter-spacing: 4px; color: #ffffff;">LIBOKÉ</div>
+                            <div style="margin-top: 10px; font-size: 13px; letter-spacing: 1px; color: #f9d081;">{{ site.baseline }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="height: 4px; line-height: 4px; font-size: 0; background-color: #ffc24d;">&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 36px 32px 32px; font-size: 16px; line-height: 1.6;">
+                            {% block contenu %}{% endblock %}
+                        </td>
+                    </tr>
+
+                    {# Pied #}
+                    <tr>
+                        <td align="center" style="background-color: #f7f7f7; padding: 24px 32px; font-size: 13px; line-height: 1.6; color: #666666;">
+                            <div style="font-weight: bold; color: #006952;">{{ site.name }}</div>
+                            <div>{{ site.baseline }}</div>
+                            <div style="margin-top: 12px;">
+                                {% for reseau in site.reseaux %}
+                                    <a href="{{ reseau.href }}" style="color: #006952; text-decoration: none;">{{ reseau.label }}</a>{% if not loop.last %}&nbsp;&nbsp;·&nbsp;&nbsp;{% endif %}
+                                {% endfor %}
+                            </div>
+                            {% block mention %}{% endblock %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
