@@ -5,7 +5,7 @@ seo:
   title: "Politique de confidentialité — Association LIBOKÉ"
   description: "Comment l'association LIBOKÉ collecte et conserve les données personnelles issues du formulaire de contact et des dons, et comment exercer vos droits."
 template: default
-updated: "2026-09-25"
+updated: "2026-09-26"
 ---
 
 L'association LIBOKÉ attache une grande importance à la protection de vos
@@ -29,10 +29,11 @@ Le site ne collecte des données personnelles que dans deux cas.
 ### Formulaire de contact
 
 - **Données** : nom, adresse électronique, objet et contenu du message, date
-  d'envoi, et votre consentement à ce traitement.
+  d'envoi, et votre accord à leur conservation si vous avez coché la case
+  prévue à cet effet (facultative).
 - **Finalité** : répondre à votre message.
-- **Base légale** : votre consentement, recueilli par la case à cocher du
-  formulaire.
+- **Base légale** : l'intérêt légitime de l'association à répondre aux
+  demandes qui lui sont adressées.
 - **Durée de conservation** : les messages sont **supprimés automatiquement
   douze mois** après leur réception.
 
@@ -76,8 +77,8 @@ techniques suivants, dans la limite de ce qui est nécessaire à leur mission :
 
 Vous disposez d'un droit d'accès, de rectification, d'effacement et de
 portabilité de vos données, ainsi que d'un droit d'opposition et de
-limitation de leur traitement. Vous pouvez retirer à tout moment votre
-consentement pour les données collectées sur cette base.
+limitation de leur traitement. Vous pouvez notamment demander à tout moment
+la suppression de votre message.
 
 Pour exercer ces droits, écrivez à l'adresse indiquée plus haut. Une réponse
 vous sera apportée dans un délai d'un mois.

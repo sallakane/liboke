@@ -36,6 +36,7 @@ final class ContactInput
     )]
     public string $message = '';
 
-    #[Assert\IsTrue(message: 'Votre accord est nécessaire pour traiter votre demande.')]
+    // Facultatif : la réponse au message repose sur l'intérêt légitime de
+    // l'association, pas sur ce consentement (politique de confidentialité).
     public bool $consent = false;
 }

@@ -48,7 +48,7 @@ final class ContactType extends AbstractType
             ])
             ->add('consent', CheckboxType::class, [
                 'label' => 'J\'accepte que mon message et mes coordonnées soient conservés pour permettre à l\'association de me répondre.',
-                'required' => true,
+                'required' => false,
             ])
             // Piège à robots : masqué visuellement et aux lecteurs d'écran,
             // il ne doit jamais être rempli par un humain.

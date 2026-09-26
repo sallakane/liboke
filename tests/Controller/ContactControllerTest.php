@@ -136,7 +136,7 @@ final class ContactControllerTest extends WebTestCase
         self::assertQueuedEmailCount(0);
     }
 
-    public function testMissingConsentIsRejected(): void
+    public function testConsentIsOptional(): void
     {
         $client = static::createClient();
         $this->purge($client);
@@ -146,8 +146,12 @@ final class ContactControllerTest extends WebTestCase
         $formulaire->remove('contact[consent]');
         $client->submit($formulaire);
 
-        self::assertResponseStatusCodeSame(422);
-        self::assertCount(0, $this->messages($client)->findAll());
+        self::assertResponseRedirects('/contact');
+        self::assertQueuedEmailCount(1);
+
+        $messages = $this->messages($client)->findAll();
+        self::assertCount(1, $messages);
+        self::assertFalse($messages[0]->hasConsent());
     }
 
     /**
