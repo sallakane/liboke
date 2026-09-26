@@ -11,25 +11,52 @@
 {% block bandeau %}{% endblock %}
 
 {% block body %}
-    <div class="accueil">
+    {# 1. Grande image, texte posé dessus sur un voile vert. #}
+    <section class="accueil" aria-labelledby="accueil-titre">
+        <div class="accueil__visuel">
+            {# Image principale de l'accueil (LCP) : chargée en priorité. #}
+            {{ image('accueil.jpg', '[À COMPLÉTER] Description de la photographie d\'accueil', {
+                sizes: '100vw',
+                prioritaire: true,
+            }) }}
+        </div>
+
         <div class="accueil__texte">
-            <h1>{{ site.name }}</h1>
+            <h1 id="accueil-titre">{{ site.name }}</h1>
             <p class="accueil__baseline">{{ site.baseline }}</p>
 
             <div class="accueil__corps">
                 {{ page.html|raw }}
             </div>
 
-            <p><a class="bouton" href="/nous-soutenir">Nous soutenir</a></p>
+            <p class="accueil__actions">
+                <a class="bouton bouton--or" href="/nous-soutenir">Nous soutenir</a>
+                <a class="bouton bouton--contour" href="/nos-actions">Découvrir nos actions</a>
+            </p>
         </div>
+    </section>
 
-        <div class="accueil__visuel">
-            {# Image principale de l'accueil (LCP) : chargée en priorité.
-               Occupe toute la largeur sur mobile, ~70 % au-delà de 900 px. #}
-            {{ image('accueil.jpg', '[À COMPLÉTER] Description de la photographie d\'accueil', {
-                sizes: '(min-width: 900px) 70vw, 100vw',
-                prioritaire: true,
-            }) }}
-        </div>
-    </div>
+    {# 2. Les trois domaines d'action. #}
+    {% if site.engagements is not empty %}
+        <section class="engagements" aria-labelledby="engagements-titre">
+            <h2 id="engagements-titre">Nos engagements</h2>
+            <ul class="engagements__liste">
+                {% for engagement in site.engagements %}
+                    <li class="engagement">
+                        {% include 'home/_icone.html.twig' with {icone: engagement.icone} only %}
+                        <h3>{{ engagement.titre }}</h3>
+                        <p>{{ engagement.texte }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="engagements__lien"><a href="/nos-actions">Voir toutes nos actions <span aria-hidden="true">→</span></a></p>
+        </section>
+    {% endif %}
+
+    {# 3. Appel au don. #}
+    <section class="appel-don" aria-labelledby="appel-don-titre">
+        <h2 id="appel-don-titre">Chaque don compte</h2>
+        <p>Votre soutien permet à l'association de poursuivre ses actions sur le terrain.</p>
+        <p><a class="bouton bouton--or" href="/nous-soutenir">Faire un don</a></p>
+    </section>
 {% endblock %}

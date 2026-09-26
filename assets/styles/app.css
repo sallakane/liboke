@@ -340,25 +340,23 @@ main {
 
 /* ---------------------------------------------------------------- 7. accueil */
 
+/* Grande image en fond, texte posé dessus sur un voile vert. La section
+   occupe au moins la hauteur visible sous l'en-tête : plus de vide entre
+   l'image et la suite de la page. */
 .accueil {
-    display: grid;
-    grid-template-columns: 1fr;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(32rem, calc(100svh - var(--hauteur-entete)));
+    overflow: hidden;
+    color: var(--blanc);
+    background: var(--vert);
 }
 
-.accueil__texte {
-    padding: var(--esp-l) var(--esp-m);
-}
-
-.accueil__baseline {
-    margin: 0 0 var(--esp-m);
-    color: var(--or-sur-blanc);
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    font-weight: 700;
-}
-
-.accueil__corps {
-    max-width: min(var(--largeur-contenu), 100%);
-    margin-bottom: var(--esp-m);
+.accueil__visuel,
+.accueil__visuel picture {
+    position: absolute;
+    inset: 0;
 }
 
 .accueil__visuel img {
@@ -366,17 +364,133 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 60% 30%;
+}
+
+/* Voile : garantit le contraste du texte blanc quelle que soit la photo. */
+.accueil__visuel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 60 47 / 0.95) 0%, rgb(0 60 47 / 0.8) 45%, rgb(0 60 47 / 0.1) 100%);
+}
+
+.accueil__texte {
+    position: relative;
+    width: 100%;
+    padding: var(--esp-xl) var(--esp-m) var(--esp-l);
+}
+
+.accueil h1 {
+    margin-bottom: var(--esp-xs);
+    color: var(--blanc);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+}
+
+.accueil__baseline {
+    margin: 0 0 var(--esp-m);
+    color: var(--or-sur-vert);
+    font-size: clamp(1.15rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.accueil__corps {
+    max-width: 38rem;
+    margin-bottom: var(--esp-m);
+    font-size: 1.125rem;
+}
+
+.accueil__corps a {
+    color: var(--blanc);
+}
+
+.accueil__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-s);
+    margin: 0;
 }
 
 @media (min-width: 900px) {
     .accueil {
-        grid-template-columns: minmax(20rem, 30%) 1fr;
         align-items: center;
     }
 
+    .accueil__visuel::after {
+        background: linear-gradient(to right, rgb(0 60 47 / 0.95) 0%, rgb(0 60 47 / 0.85) 35%, rgb(0 60 47 / 0.15) 70%, rgb(0 60 47 / 0) 100%);
+    }
+
     .accueil__texte {
+        max-width: 42rem;
         padding: var(--esp-xl) var(--esp-l);
     }
+}
+
+/* Nos engagements */
+
+.engagements {
+    padding: var(--esp-xl) var(--esp-m);
+    background: var(--gris-clair);
+    text-align: center;
+}
+
+.engagements__liste {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--esp-m);
+    max-width: 72rem;
+    margin: var(--esp-l) auto;
+    padding: 0;
+    list-style: none;
+}
+
+.engagement {
+    padding: var(--esp-l) var(--esp-m);
+    border-top: 4px solid var(--or);
+    background: var(--blanc);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+.engagement__icone {
+    color: var(--vert);
+    margin-bottom: var(--esp-xs);
+}
+
+.engagement h3 {
+    font-size: 1.5rem;
+}
+
+.engagement p {
+    margin: 0;
+}
+
+.engagements__lien {
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Appel au don */
+
+.appel-don {
+    padding: var(--esp-xl) var(--esp-m);
+    background: var(--vert);
+    color: var(--blanc);
+    text-align: center;
+}
+
+.appel-don h2 {
+    color: var(--blanc);
+}
+
+.appel-don p {
+    max-width: 36rem;
+    margin: 0 auto var(--esp-m);
+    font-size: 1.125rem;
+}
+
+.appel-don p:last-child {
+    margin-bottom: 0;
 }
 
 .bouton {
@@ -393,6 +507,31 @@ main {
 .bouton:focus-visible {
     background: var(--vert);
     color: var(--blanc);
+}
+
+/* Variantes pour fonds sombres (accueil) */
+
+.bouton--or {
+    background: var(--or);
+    color: var(--noir);
+}
+
+.bouton--or:hover,
+.bouton--or:focus-visible {
+    background: var(--blanc);
+    color: var(--vert);
+}
+
+.bouton--contour {
+    padding: calc(0.75rem - 2px) calc(1.4em - 2px);
+    border: 2px solid var(--blanc);
+    background: transparent;
+}
+
+.bouton--contour:hover,
+.bouton--contour:focus-visible {
+    background: var(--blanc);
+    color: var(--vert);
 }
 
 /* ------------------------------------------------------- 7 bis. pages de contenu */

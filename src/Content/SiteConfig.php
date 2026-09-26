@@ -18,6 +18,7 @@ final readonly class SiteConfig
      * @param array{email: string, telephone: string, adresse: string} $contact
      * @param list<array{label: string, href: string, icone: string}>  $reseaux
      * @param list<array{label: string, href: string}>                 $liensPied
+     * @param list<array{titre: string, texte: string, icone: string}>  $engagements
      */
     public function __construct(
         public string $name,
@@ -25,6 +26,7 @@ final readonly class SiteConfig
         public array $contact,
         public array $reseaux,
         public array $liensPied,
+        public array $engagements = [],
     ) {
     }
 
@@ -55,6 +57,7 @@ final readonly class SiteConfig
             ],
             reseaux: self::reseaux($data),
             liensPied: self::liens($pied),
+            engagements: self::engagements($data),
         );
     }
 
@@ -144,6 +147,38 @@ final readonly class SiteConfig
             $out[] = [
                 'label' => self::str($entry, 'label'),
                 'href' => self::str($entry, 'href'),
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Cartes « Nos engagements » de la page d'accueil.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return list<array{titre: string, texte: string, icone: string}>
+     */
+    private static function engagements(array $data): array
+    {
+        $value = $data['engagements'] ?? null;
+
+        if (!\is_array($value)) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($value as $entry) {
+            if (!\is_array($entry)) {
+                continue;
+            }
+
+            /* @var array<string, mixed> $entry */
+            $out[] = [
+                'titre' => self::str($entry, 'titre'),
+                'texte' => self::str($entry, 'texte'),
+                'icone' => self::str($entry, 'icone'),
             ];
         }
 

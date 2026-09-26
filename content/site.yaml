@@ -16,6 +16,20 @@ reseaux:
   - { label: "Instagram", href: "https://instagram.com/association_lbk",                            icone: "icone_Instagram.svg" }
   - { label: "YouTube",   href: "https://www.youtube.com/channel/UCWaktFnfwQmfy03Nsz1yyBQ/videos",  icone: "icone_YouTube.svg" }
 
+# Cartes « Nos engagements » de la page d'accueil.
+# icone : education, environnement ou sante (dessins dans
+# templates/home/_icone.html.twig).
+engagements:
+  - titre: "Éducation"
+    icone: education
+    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour l'éducation."
+  - titre: "Environnement"
+    icone: environnement
+    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour l'environnement."
+  - titre: "Santé"
+    icone: sante
+    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour la santé."
+
 # Le menu principal est déduit du front matter des pages (clé « menu »).
 # Le pied de page, lui, liste explicitement les pages légales.
 pied:
