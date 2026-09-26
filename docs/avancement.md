@@ -150,12 +150,24 @@ En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0
 ### Reste à faire sur la production
 
 1. **Compte admin** : générer le hash (`docker run --rm -it --entrypoint php liboke-php-prod bin/console security:hash-password`), le mettre dans `.env.prod.local` (`ADMIN_PASSWORD_HASH='…'`), `bin/prod up -d`, puis **vérifier la connexion** (s'assurer que les `$` du hash ne sont pas interpolés par Compose).
-2. **Clés Stripe de test** (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`) dans `.env.prod.local`, puis `bin/prod up -d`.
-3. **Webhook Stripe** (mode test) : endpoint `https://association-liboke.org/stripe/webhook`, événements `checkout.session.completed` et `charge.refunded` ; secret `whsec_…` dans `STRIPE_WEBHOOK_SECRET` ; don de test `4242…` et contrôle « Payé » dans `/admin/dons`.
-4. **E-mails** : `MAILER_DSN=null:` (rien ne part). Choisir un SMTP, configurer SPF/DKIM/DMARC sur le domaine.
+2. ~~Clés Stripe de test~~ — fait.
+3. ~~Webhook Stripe (mode test)~~ — fait le 2026-09-26 (voir §4 quinquies).
+4. **E-mails** : envoi provisoire par Gmail (voir §4 quinquies). À terme : SMTP du domaine (ou Brevo) avec SPF/DKIM/DMARC et un expéditeur `@association-liboke.org`.
 5. **Copie des sauvegardes hors du VPS** : destination à décider.
 6. **Ouverture au public** : retirer le `basic_auth`, puis `SITE_INDEXABLE=1` quand le contenu réel est en ligne (phase 8b).
 7. Plus tard : clés Stripe **live** et endpoint de production, redirections des anciennes URLs Drupal.
+
+## 4 quinquies. Session du 2026-09-26 — e-mails, Stripe, accueil
+
+Déployé en production (`bin/deploy`, lancé par le développeur : le mode auto de Claude Code refuse les déploiements).
+
+- **E-mails** : `MAILER_DSN` sur le SMTP Gmail (mot de passe d'application du compte `ndiageze@gmail.com`), `MAILER_FROM` et `CONTACT_TO` sur cette adresse. `CONTACT_TO` accepte une **liste séparée par des virgules**. Objet des messages de contact : `[LIBOKE CONTACT] …`.
+- **Contact** : la case de conservation des données est **facultative** ; la base légale affichée dans la politique de confidentialité est l'**intérêt légitime** (à faire valider par l'association).
+- **Stripe (test)** : webhook déclaré et vérifié (don de 10 € passé à `paid`, remerciement reçu). Formulaire simplifié : **euros seuls** (`adaptive_pricing` désactivé), **carte seule** (Apple/Google Pay inclus), **plus d'adresse postale** (`billing_address_collection: auto`) — à repasser à `required` avec le reçu fiscal. Un don de 25 € du matin reste `pending` (webhook pas encore déclaré à ce moment-là).
+- **Mail de remerciement** : nouveau design (`templates/emails/_layout.html.twig`), sans image (logo SVG non affiché par Gmail).
+- **Nous soutenir** : le champ « Autre montant » n'apparaît que si l'option est cochée (CSS `:has`).
+- **Accueil** : photo pleine hauteur avec texte en surimpression, cartes « Nos engagements » (textes `[À COMPLÉTER]` dans `content/site.yaml`, clé `engagements`), bandeau d'appel au don. En attente du retour du client.
+- Tests ajoutés/adaptés (destinataires multiples, consentement facultatif) mais **suite PHPUnit non relancée** : l'environnement de dev n'a pas été démarré sur le VPS partagé. À lancer en local (`make test`).
 
 ## 5. Pièges rencontrés, à ne pas redécouvrir
 
