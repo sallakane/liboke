@@ -33,8 +33,9 @@ final class ContactController extends AbstractController
         private readonly LoggerInterface $logger,
         #[Autowire(service: 'limiter.contact_form')]
         private readonly RateLimiterFactoryInterface $limiter,
-        #[Autowire('%env(CONTACT_TO)%')]
-        private readonly string $destinataire,
+        /** @var list<string> une ou plusieurs adresses, séparées par des virgules */
+        #[Autowire('%env(csv:CONTACT_TO)%')]
+        private readonly array $destinataires,
         #[Autowire('%env(MAILER_FROM)%')]
         private readonly string $expediteur,
     ) {
@@ -101,7 +102,7 @@ final class ContactController extends AbstractController
             $this->mailer->send(
                 (new TemplatedEmail())
                     ->from(new Address($this->expediteur, 'Site association LIBOKÉ'))
-                    ->to($this->destinataire)
+                    ->to(...array_map(trim(...), $this->destinataires))
                     ->replyTo(new Address($saisie->email, $saisie->name))
                     ->subject(\sprintf('[Contact] %s', $saisie->subject))
                     ->htmlTemplate('emails/contact.html.twig')

@@ -85,6 +85,34 @@ final class ContactControllerTest extends WebTestCase
         self::assertStringContainsString('claire@example.org', $replyTo->getBodyAsString());
     }
 
+    public function testTheEmailGoesToEveryConfiguredRecipient(): void
+    {
+        // CONTACT_TO accepte plusieurs adresses séparées par des virgules.
+        $precedent = $_SERVER['CONTACT_TO'] ?? null;
+        $_SERVER['CONTACT_TO'] = $_ENV['CONTACT_TO'] = 'a@example.org, b@example.org';
+
+        try {
+            $client = static::createClient();
+            $this->purge($client);
+
+            $crawler = $client->request('GET', '/contact');
+            $client->submit($this->remplir($crawler));
+
+            $email = self::getMailerMessage();
+            self::assertInstanceOf(Email::class, $email);
+            self::assertSame(
+                ['a@example.org', 'b@example.org'],
+                array_map(static fn ($adresse) => $adresse->getAddress(), $email->getTo()),
+            );
+        } finally {
+            if (null === $precedent) {
+                unset($_SERVER['CONTACT_TO'], $_ENV['CONTACT_TO']);
+            } else {
+                $_SERVER['CONTACT_TO'] = $_ENV['CONTACT_TO'] = $precedent;
+            }
+        }
+    }
+
     public function testInvalidSubmissionShowsErrorsAndStoresNothing(): void
     {
         $client = static::createClient();
