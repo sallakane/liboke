@@ -18,7 +18,7 @@ final readonly class SiteConfig
      * @param array{email: string, telephone: string, adresse: string} $contact
      * @param list<array{label: string, href: string, icone: string}>  $reseaux
      * @param list<array{label: string, href: string}>                 $liensPied
-     * @param list<array{titre: string, texte: string, icone: string}>  $engagements
+     * @param list<array{titre: string, texte: string, icone: string}> $engagements
      */
     public function __construct(
         public string $name,

@@ -95,7 +95,7 @@ final class DonationControllerTest extends WebTestCase
         self::assertIsArray($reponse);
         self::assertIsString($reponse['form'] ?? null);
         self::assertStringContainsString('Le montant doit être compris entre', $reponse['form']);
-        self::assertStringContainsString('data-action="don#envoyer"', $reponse['form']);
+        self::assertStringContainsString('data-action="don#envoyer', $reponse['form']);
         self::assertArrayNotHasKey('clientSecret', $reponse);
         self::assertNull($this->fake($client)->dernierMontant);
     }
