@@ -58,7 +58,7 @@ final class ImageVariantsTest extends KernelTestCase
         self::assertStringStartsWith('<picture><source type="image/webp" srcset="', $html);
         self::assertMatchesRegularExpression('#/assets/images/variantes/accueil-480-[\w-]+\.webp 480w#', $html);
         self::assertMatchesRegularExpression('#src="/assets/images/variantes/accueil-800-[\w-]+\.jpg"#', $html, 'Repli sur la variante 800 px.');
-        self::assertStringContainsString('width="1600" height="1080"', $html);
+        self::assertStringContainsString('width="1120" height="686"', $html);
         self::assertStringContainsString('alt="Élèves en classe"', $html);
         self::assertStringContainsString('sizes="(min-width: 900px) 70vw, 100vw"', $html);
         self::assertStringContainsString('loading="lazy"', $html);

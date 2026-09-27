@@ -150,7 +150,7 @@ final class SeoControllerTest extends WebTestCase
         self::assertCount(1, $crawler->filter('nav.fil-ariane'));
     }
 
-    public function testPlaceholderContactDetailsAreNotPublishedInStructuredData(): void
+    public function testOnlyFilledContactDetailsArePublishedInStructuredData(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/');
@@ -163,8 +163,9 @@ final class SeoControllerTest extends WebTestCase
         );
 
         self::assertIsArray($organisation);
+        // Téléphone laissé vide dans content/site.yaml : il ne doit pas apparaître.
         self::assertArrayNotHasKey('telephone', $organisation);
-        self::assertArrayNotHasKey('address', $organisation);
+        self::assertArrayHasKey('address', $organisation);
         self::assertArrayHasKey('sameAs', $organisation);
     }
 

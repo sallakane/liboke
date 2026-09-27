@@ -14,8 +14,8 @@
             <p class="pied__titre">Nous contacter</p>
             <address class="pied__adresse">
                 {{ site.contact.adresse }}<br>
-                {{ site.contact.telephone }}<br>
-                {{ site.contact.email }}
+                {% if site.contact.telephone %}{{ site.contact.telephone }}<br>{% endif %}
+                <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a>
             </address>
         </div>
 

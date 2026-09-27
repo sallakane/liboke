@@ -5,7 +5,7 @@ seo:
   title: "Politique de confidentialité — Association LIBOKÉ"
   description: "Comment l'association LIBOKÉ collecte et conserve les données personnelles issues du formulaire de contact et des dons, et comment exercer vos droits."
 template: default
-updated: "2026-09-26"
+updated: "2026-09-27"
 ---
 
 L'association LIBOKÉ attache une grande importance à la protection de vos
@@ -19,8 +19,8 @@ vos droits, conformément au Règlement général sur la protection des données
 L'association LIBOKÉ, dont les coordonnées figurent dans les
 [mentions légales](/mentions-legales).
 
-Contact pour toute question relative à vos données : [À COMPLÉTER] adresse
-électronique dédiée.
+Contact pour toute question relative à vos données :
+[association.liboke@gmail.com](mailto:association.liboke@gmail.com).
 
 ## Données collectées
 
@@ -70,8 +70,8 @@ techniques suivants, dans la limite de ce qui est nécessaire à leur mission :
   [politique de confidentialité de Stripe](https://stripe.com/fr/privacy).
 - **Hébergeur du site** : [À COMPLÉTER] raison sociale et pays
   d'hébergement.
-- **Prestataire d'envoi des courriels** : [À COMPLÉTER] raison sociale et
-  pays, le cas échéant.
+- **Prestataire d'envoi des courriels** : Google (service Gmail), Google
+  Ireland Limited, Irlande.
 
 ## Vos droits
 

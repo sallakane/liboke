@@ -43,7 +43,7 @@ final class HomeControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/');
 
-        self::assertCount(6, $crawler->filter('.navigation__lien'));
+        self::assertCount(5, $crawler->filter('.navigation__lien'));
         self::assertCount(1, $crawler->filter('.navigation__lien[aria-current="page"]'));
         self::assertSame('Accueil', trim($crawler->filter('.navigation__lien[aria-current="page"]')->text()));
     }

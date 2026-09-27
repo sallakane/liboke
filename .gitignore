@@ -31,3 +31,9 @@ phpstan.neon
 ###> ide ###
 /.idea/
 ###< ide ###
+
+###> contenu ###
+# Documents bruts transmis par l'association (photos, PDF) : seules les
+# images retenues sont copiées dans assets/images/.
+/data/
+###< contenu ###

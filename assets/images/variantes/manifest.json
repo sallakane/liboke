@@ -1,20 +1,18 @@
 {
     "accueil.jpg": {
-        "largeur": 1600,
-        "hauteur": 1080,
-        "empreinte": "65cee71fa10c1e7294e66e62111c2c55e5efd8b2",
+        "largeur": 1120,
+        "hauteur": 686,
+        "empreinte": "a28c34ec55acf0aeeedb8e81b4447e57683a1d7c",
         "variantes": {
             "webp": {
                 "480": "images/variantes/accueil-480.webp",
                 "800": "images/variantes/accueil-800.webp",
-                "1200": "images/variantes/accueil-1200.webp",
-                "1600": "images/variantes/accueil-1600.webp"
+                "1120": "images/variantes/accueil-1120.webp"
             },
             "jpg": {
                 "480": "images/variantes/accueil-480.jpg",
                 "800": "images/variantes/accueil-800.jpg",
-                "1200": "images/variantes/accueil-1200.jpg",
-                "1600": "images/variantes/accueil-1600.jpg"
+                "1120": "images/variantes/accueil-1120.jpg"
             }
         }
     },
@@ -74,10 +72,178 @@
             }
         }
     },
+    "contenu/aide-alimentaire-marche.jpg": {
+        "largeur": 635,
+        "hauteur": 325,
+        "empreinte": "0a7105fd81acc7ac1a5f31a5266ff2e8d1abbcdf",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/aide-alimentaire-marche-480.webp",
+                "635": "images/variantes/contenu/aide-alimentaire-marche-635.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/aide-alimentaire-marche-480.jpg",
+                "635": "images/variantes/contenu/aide-alimentaire-marche-635.jpg"
+            }
+        }
+    },
+    "contenu/ardoises-de-l-espoir.jpg": {
+        "largeur": 1146,
+        "hauteur": 557,
+        "empreinte": "3c59755d9998bb883db2d844a595dece51a0451b",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/ardoises-de-l-espoir-480.webp",
+                "800": "images/variantes/contenu/ardoises-de-l-espoir-800.webp",
+                "1146": "images/variantes/contenu/ardoises-de-l-espoir-1146.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/ardoises-de-l-espoir-480.jpg",
+                "800": "images/variantes/contenu/ardoises-de-l-espoir-800.jpg",
+                "1146": "images/variantes/contenu/ardoises-de-l-espoir-1146.jpg"
+            }
+        }
+    },
+    "contenu/ardoises-en-classe.jpg": {
+        "largeur": 829,
+        "hauteur": 678,
+        "empreinte": "069f26ba524a276905506264c16af64e59a73ac0",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/ardoises-en-classe-480.webp",
+                "800": "images/variantes/contenu/ardoises-en-classe-800.webp",
+                "829": "images/variantes/contenu/ardoises-en-classe-829.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/ardoises-en-classe-480.jpg",
+                "800": "images/variantes/contenu/ardoises-en-classe-800.jpg",
+                "829": "images/variantes/contenu/ardoises-en-classe-829.jpg"
+            }
+        }
+    },
+    "contenu/carte-maternite.jpg": {
+        "largeur": 1004,
+        "hauteur": 688,
+        "empreinte": "786bfbae66be17367ad3add412d44b40def3294c",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/carte-maternite-480.webp",
+                "800": "images/variantes/contenu/carte-maternite-800.webp",
+                "1004": "images/variantes/contenu/carte-maternite-1004.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/carte-maternite-480.jpg",
+                "800": "images/variantes/contenu/carte-maternite-800.jpg",
+                "1004": "images/variantes/contenu/carte-maternite-1004.jpg"
+            }
+        }
+    },
+    "contenu/cooperative-agricole-femmes.jpg": {
+        "largeur": 1245,
+        "hauteur": 662,
+        "empreinte": "3d08ca05eef9d99031db49bd71d53e60004458d3",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/cooperative-agricole-femmes-480.webp",
+                "800": "images/variantes/contenu/cooperative-agricole-femmes-800.webp",
+                "1200": "images/variantes/contenu/cooperative-agricole-femmes-1200.webp",
+                "1245": "images/variantes/contenu/cooperative-agricole-femmes-1245.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/cooperative-agricole-femmes-480.jpg",
+                "800": "images/variantes/contenu/cooperative-agricole-femmes-800.jpg",
+                "1200": "images/variantes/contenu/cooperative-agricole-femmes-1200.jpg",
+                "1245": "images/variantes/contenu/cooperative-agricole-femmes-1245.jpg"
+            }
+        }
+    },
+    "contenu/distribution-masques.jpg": {
+        "largeur": 960,
+        "hauteur": 668,
+        "empreinte": "ffaa7a5e98b45fc8ca55007d5c381ebb5d235dd6",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/distribution-masques-480.webp",
+                "800": "images/variantes/contenu/distribution-masques-800.webp",
+                "960": "images/variantes/contenu/distribution-masques-960.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/distribution-masques-480.jpg",
+                "800": "images/variantes/contenu/distribution-masques-800.jpg",
+                "960": "images/variantes/contenu/distribution-masques-960.jpg"
+            }
+        }
+    },
+    "contenu/ecolieres-carte-hygiene-feminine.jpg": {
+        "largeur": 986,
+        "hauteur": 569,
+        "empreinte": "24ec45a9179bf8c470f0c40207a8d7c0d8205623",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-480.webp",
+                "800": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-800.webp",
+                "986": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-986.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-480.jpg",
+                "800": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-800.jpg",
+                "986": "images/variantes/contenu/ecolieres-carte-hygiene-feminine-986.jpg"
+            }
+        }
+    },
+    "contenu/enfant-en-classe.jpg": {
+        "largeur": 635,
+        "hauteur": 325,
+        "empreinte": "27eb6bd1a66dba8e66f9ec8273bc9e68448d637d",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/enfant-en-classe-480.webp",
+                "635": "images/variantes/contenu/enfant-en-classe-635.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/enfant-en-classe-480.jpg",
+                "635": "images/variantes/contenu/enfant-en-classe-635.jpg"
+            }
+        }
+    },
+    "contenu/landry-milingo.jpg": {
+        "largeur": 819,
+        "hauteur": 546,
+        "empreinte": "7ddd3378efa7bc71128d6b7ba85b2fa1819ad408",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/landry-milingo-480.webp",
+                "800": "images/variantes/contenu/landry-milingo-800.webp",
+                "819": "images/variantes/contenu/landry-milingo-819.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/landry-milingo-480.jpg",
+                "800": "images/variantes/contenu/landry-milingo-800.jpg",
+                "819": "images/variantes/contenu/landry-milingo-819.jpg"
+            }
+        }
+    },
+    "contenu/travail-champs.jpg": {
+        "largeur": 1135,
+        "hauteur": 671,
+        "empreinte": "782a1e5d26256889173d0c8166c5c6708f654599",
+        "variantes": {
+            "webp": {
+                "480": "images/variantes/contenu/travail-champs-480.webp",
+                "800": "images/variantes/contenu/travail-champs-800.webp",
+                "1135": "images/variantes/contenu/travail-champs-1135.webp"
+            },
+            "jpg": {
+                "480": "images/variantes/contenu/travail-champs-480.jpg",
+                "800": "images/variantes/contenu/travail-champs-800.jpg",
+                "1135": "images/variantes/contenu/travail-champs-1135.jpg"
+            }
+        }
+    },
     "og-defaut.jpg": {
         "largeur": 1200,
         "hauteur": 630,
-        "empreinte": "8bc0ba26719d7ad0ceba906e5367d4b26f2fb398",
+        "empreinte": "f3c864e005fda34514f7433d4ebd3dfa6af467f4",
         "variantes": {
             "webp": {
                 "480": "images/variantes/og-defaut-480.webp",

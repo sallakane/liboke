@@ -4,11 +4,14 @@ slug: contact
 menu: { label: "Contact", weight: 60 }
 seo:
   title: "Contacter l'association LIBOKÉ"
-  description: "[À COMPLÉTER] 150 à 160 caractères invitant à contacter l'association LIBOKÉ."
+  description: "Une question, une proposition de partenariat ou l'envie de vous engager comme bénévole ? Écrivez à l'association LIBOKÉ, nous vous répondrons rapidement."
 template: default
-updated: "2026-09-20"
+updated: "2026-09-27"
 ---
 
-[À COMPLÉTER] Introduction courte avant le formulaire.
+Une question sur nos actions, une proposition de partenariat, l'envie de vous
+engager à nos côtés ? Utilisez le formulaire ci-dessous : nous vous répondrons
+dans les meilleurs délais.
 
-Le formulaire de contact sera intégré à cette page en phase 5.
+Vous pouvez aussi nous écrire directement à
+[association.liboke@gmail.com](mailto:association.liboke@gmail.com).

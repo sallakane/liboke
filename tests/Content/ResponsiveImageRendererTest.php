@@ -17,7 +17,7 @@ final class ResponsiveImageRendererTest extends KernelTestCase
         self::assertStringContainsString('type="image/webp"', $html);
         self::assertStringContainsString('alt="Une classe en plein air"', $html);
         self::assertStringContainsString('loading="lazy"', $html);
-        self::assertStringContainsString('width="1600" height="1080"', $html);
+        self::assertStringContainsString('width="1120" height="686"', $html);
     }
 
     public function testAnImageWithoutVariantsKeepsTheStandardRendering(): void

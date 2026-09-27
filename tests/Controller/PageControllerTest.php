@@ -77,7 +77,7 @@ final class PageControllerTest extends WebTestCase
         $labels = array_map(static fn (Page $p): string => $p->menu->label ?? '', $pages->menu());
 
         self::assertSame(
-            ['Accueil', "L'association", 'Nos actions', 'Partenaires', 'Nous soutenir', 'Contact'],
+            ['Accueil', 'Qui sommes-nous', 'Nos actions', 'Nous soutenir', 'Contact'],
             $labels,
         );
     }

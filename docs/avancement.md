@@ -1,6 +1,6 @@
 # État d'avancement — site association LIBOKÉ
 
-> Dernière mise à jour : **2026-09-25** (premier déploiement sur le VPS).
+> Dernière mise à jour : **2026-09-27** (intégration du contenu réel, §4 sexies).
 > Dépôt : `git@github.com:sallakane/liboke.git`, branche `main`.
 > Documents liés : `CLAUDE.md` (cahier des charges, fait foi), `docs/theme-audit.md` (phase 0).
 
@@ -47,7 +47,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement partiel à traiter) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
-| 8b | Intégration du contenu réel, audit final | En attente des textes et photos de l'association |
+| 8b | Intégration du contenu réel, audit final | **Contenu intégré le 2026-09-27** (§4 sexies) ; restent Partenaires, mentions légales, `make audit` |
 | 9 | Préparation production, sauvegardes | **Déployée sur le VPS le 2026-09-25** (site fermé par mot de passe, clés Stripe de test à poser) — voir §4 quater |
 
 **Volume actuel** : 52 classes PHP, 21 fichiers de test (134 tests), 28 gabarits Twig, 3 migrations, 8 pages de contenu, 922 lignes de CSS.
@@ -168,6 +168,18 @@ Déployé en production (`bin/deploy`, lancé par le développeur : le mode auto
 - **Nous soutenir** : le champ « Autre montant » n'apparaît que si l'option est cochée (CSS `:has`).
 - **Accueil** : photo pleine hauteur avec texte en surimpression, cartes « Nos engagements » (textes `[À COMPLÉTER]` dans `content/site.yaml`, clé `engagements`), bandeau d'appel au don. En attente du retour du client.
 - Tests ajoutés/adaptés (destinataires multiples, consentement facultatif) mais **suite PHPUnit non relancée** : l'environnement de dev n'a pas été démarré sur le VPS partagé. À lancer en local (`make test`).
+
+## 4 sexies. Session du 2026-09-27 — contenu réel
+
+Source : textes, photos et biographie PDF du fondateur transmis par l'association (dossier local `data/`, ignoré par git).
+
+- **Pages rédigées** : accueil, Qui sommes-nous (slug `l-association` conservé, entrée de menu renommée ; sections histoire, mission, valeurs, **fondateur Landry Milingo**), Nos actions (7 actions illustrées), Nous soutenir, Contact. Textes du client enrichis sans en changer le fond.
+- **Bio du fondateur** : condensée et rendue plus sobre. Retirés faute de justificatif : « ONG reconnue d'intérêt public » et « des milliers de personnes ». Ajouté à la demande du client : Ambassadeur de la paix (FPU) — **intitulé exact à confirmer** (la FPU décerne « Ambassadeur pour la paix »).
+- **Pays d'intervention** : RDC, déduit de la biographie (le client ne l'écrit pas) ; siège à Toulouse (PDF). Ville ou région à préciser.
+- **Partenaires** : retirée du menu et du sitemap (`noindex`) faute de contenu.
+- **Coordonnées** (`content/site.yaml`, mentions légales, politique de confidentialité) : e-mail, adresse du siège, SIRET 889 179 131 00012. Téléphone non publié (portable, à confirmer). Twitter supprimé ; le lien de partage Facebook redirige vers `Association.LBK`.
+- **Photos** : 11 images dans `assets/images/contenu/` + `accueil.jpg` (écolières avec leur carte, choix du client) et `og-defaut.jpg` recadrée. Sources en ~1 100 px : des originaux amélioreraient la bannière sur grand écran. Droit à l'image : confirmé par le développeur.
+- Tests adaptés (menu, dimensions de l'image d'accueil, pages `noindex`, adresse publiée). Corrigé au passage un test de `DonationControllerTest` cassé depuis `abebf1c` (attribut `data-action` enrichi).
 
 ## 5. Pièges rencontrés, à ne pas redécouvrir
 

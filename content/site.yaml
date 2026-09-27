@@ -2,19 +2,22 @@
 # exposée à Twig sous la variable « site ».
 
 name: "Association LIBOKÉ"
+# Reprise du logo de l'association.
 baseline: "Éducation · Environnement · Santé"
 
+# Téléphone laissé vide : le seul numéro connu (biographie du fondateur) est
+# un portable, sa publication reste à confirmer par l'association.
 contact:
-  email: "[À COMPLÉTER]"
-  telephone: "[À COMPLÉTER]"
-  adresse: "[À COMPLÉTER]"
+  email: "association.liboke@gmail.com"
+  telephone: ""
+  adresse: "115 chemin de Lanusse, 31200 Toulouse, France"
 
-# URLs reprises telles quelles de l'ancien thème Drupal (page.html.twig).
+# Liens fournis par l'association le 2026-09-27 (le lien de partage Facebook
+# redirige vers la page Association.LBK). Plus de compte Twitter.
 reseaux:
-  - { label: "Facebook",  href: "https://facebook.com/Association.LBK",                             icone: "icone_Facebook.svg" }
-  - { label: "Twitter",   href: "https://twitter.com/association_lbk",                              icone: "icone_Twitter.svg" }
-  - { label: "Instagram", href: "https://instagram.com/association_lbk",                            icone: "icone_Instagram.svg" }
-  - { label: "YouTube",   href: "https://www.youtube.com/channel/UCWaktFnfwQmfy03Nsz1yyBQ/videos",  icone: "icone_YouTube.svg" }
+  - { label: "Facebook",  href: "https://www.facebook.com/Association.LBK",       icone: "icone_Facebook.svg" }
+  - { label: "Instagram", href: "https://www.instagram.com/association_lbk/",     icone: "icone_Instagram.svg" }
+  - { label: "YouTube",   href: "https://www.youtube.com/@associationliboke6174", icone: "icone_YouTube.svg" }
 
 # Cartes « Nos engagements » de la page d'accueil.
 # icone : education, environnement ou sante (dessins dans
@@ -22,13 +25,13 @@ reseaux:
 engagements:
   - titre: "Éducation"
     icone: education
-    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour l'éducation."
+    texte: "Accompagner les enfants vulnérables, notamment les orphelins, vers l'école, et équiper les classes grâce aux ardoises de l'espoir fabriquées par des personnes vivant avec un handicap."
   - titre: "Environnement"
     icone: environnement
-    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour l'environnement."
+    texte: "Mobiliser les habitants contre l'insalubrité et soutenir une coopérative agricole de femmes qui valorise les productions locales et renforce leur autonomie."
   - titre: "Santé"
     icone: sante
-    texte: "[À COMPLÉTER] Une ou deux phrases sur les actions de l'association pour la santé."
+    texte: "Faciliter l'accès des femmes et des jeunes filles à la santé grâce à la carte de maternité et à la carte d'hygiène féminine, et mener des actions de prévention."
 
 # Le menu principal est déduit du front matter des pages (clé « menu »).
 # Le pied de page, lui, liste explicitement les pages légales.

@@ -542,6 +542,13 @@ main {
     padding: var(--esp-l) var(--esp-m);
 }
 
+/* Pages publiques : le conteneur épouse la colonne de lecture et se centre,
+   sinon le texte reste calé à gauche d'un bloc de 75rem, vide à droite.
+   L'admin garde toute la largeur pour ses tableaux. */
+.page:not(.admin) {
+    max-width: calc(var(--largeur-contenu) + 2 * var(--esp-l));
+}
+
 .fil-ariane {
     margin-bottom: var(--esp-m);
     font-size: 0.9375rem;
@@ -586,6 +593,31 @@ main {
 
 .page__contenu :first-child {
     margin-top: 0;
+}
+
+/* Photos insérées dans le Markdown (App\Content\ResponsiveImageRenderer). */
+.page__contenu .image-contenu img {
+    display: block;
+    border-radius: 2px;
+}
+
+.page__contenu blockquote {
+    margin: var(--esp-l) 0;
+    padding: var(--esp-s) var(--esp-m);
+    border-left: 4px solid var(--vert);
+    font-size: 1.125rem;
+    font-style: italic;
+    background: var(--gris-clair);
+}
+
+.page__contenu blockquote p {
+    margin: 0 0 var(--esp-xs);
+}
+
+.page__contenu blockquote p:last-child {
+    margin-bottom: 0;
+    font-style: normal;
+    font-weight: 700;
 }
 
 @media (min-width: 900px) {

@@ -5,7 +5,7 @@ seo:
   title: "Mentions légales — Association LIBOKÉ"
   description: "Mentions légales du site de l'association LIBOKÉ : identité de l'éditeur, directeur de la publication, hébergeur et droits de propriété intellectuelle."
 template: default
-updated: "2026-09-25"
+updated: "2026-09-27"
 ---
 
 ## Éditeur du site
@@ -14,10 +14,9 @@ Le site association-liboke.org est édité par l'**association LIBOKÉ**.
 
 - Forme juridique : [À COMPLÉTER] (par exemple : association régie par la loi du 1er juillet 1901)
 - Numéro RNA : [À COMPLÉTER]
-- Numéro SIRET, le cas échéant : [À COMPLÉTER]
-- Siège social : [À COMPLÉTER]
-- Adresse électronique : [À COMPLÉTER]
-- Téléphone : [À COMPLÉTER]
+- Numéro SIRET : 889 179 131 00012
+- Siège social : 115 chemin de Lanusse, 31200 Toulouse, France
+- Adresse électronique : [association.liboke@gmail.com](mailto:association.liboke@gmail.com)
 
 ## Directeur de la publication
 
@@ -54,6 +53,6 @@ autorisation préalable est interdite.
 ## Liens externes
 
 Le site renvoie vers les pages de l'association sur des réseaux sociaux
-(Facebook, Instagram, Twitter, YouTube). L'association n'est pas responsable
+(Facebook, Instagram, YouTube). L'association n'est pas responsable
 du contenu ni des pratiques de ces services en matière de données
 personnelles.

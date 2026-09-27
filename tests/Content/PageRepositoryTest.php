@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Content;
 
 use App\Content\MarkdownRenderer;
+use App\Content\Page;
 use App\Content\PageRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -71,11 +72,13 @@ final class PageRepositoryTest extends TestCase
         self::assertSame($trie, $poids);
     }
 
-    public function testIndexablePagesExcludeNothingByDefault(): void
+    public function testIndexablePagesExcludeOnlyThoseMarkedNoindex(): void
     {
         $pages = $this->repository(new ArrayAdapter());
+        $attendues = array_filter($pages->all(), static fn (Page $p): bool => !$p->noindex);
 
-        self::assertCount(\count($pages->all()), $pages->indexable());
+        self::assertNotSame([], $attendues);
+        self::assertSame(array_values($attendues), $pages->indexable());
     }
 
     private function repository(CacheInterface $cache, bool $debug = true): PageRepository
