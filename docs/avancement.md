@@ -149,7 +149,7 @@ En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0
 
 ### Reste à faire sur la production
 
-1. **Compte admin** : générer le hash (`docker run --rm -it --entrypoint php liboke-php-prod bin/console security:hash-password`), le mettre dans `.env.prod.local` (`ADMIN_PASSWORD_HASH='…'`), `bin/prod up -d`, puis **vérifier la connexion** (s'assurer que les `$` du hash ne sont pas interpolés par Compose).
+1. ~~Compte admin~~ — fait le 2026-10-11 : mot de passe défini par le développeur (hash bcrypt dans `.env.prod.local`, entre apostrophes), connexion vérifiée. Don live de 5 € du 2026-10-11 : webhook accepté (200), `whsec_` validé ; remboursement à tester.
 2. ~~Clés Stripe de test~~ — fait.
 3. ~~Webhook Stripe (mode test)~~ — fait le 2026-09-26 (voir §4 quinquies).
 4. **E-mails** : envoi provisoire par Gmail (voir §4 quinquies). À terme : SMTP du domaine (ou Brevo) avec SPF/DKIM/DMARC et un expéditeur `@association-liboke.org`.
