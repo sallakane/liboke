@@ -155,7 +155,7 @@ En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0
 4. **E-mails** : envoi provisoire par Gmail (voir §4 quinquies). À terme : SMTP du domaine (ou Brevo) avec SPF/DKIM/DMARC et un expéditeur `@association-liboke.org`.
 5. **Copie des sauvegardes hors du VPS** : destination à décider.
 6. ~~Ouverture au public~~ — fait le 2026-10-11 : `basic_auth` retiré du Caddyfile de l'hôte, `SITE_INDEXABLE=1`.
-7. Plus tard : clés Stripe **live** et endpoint de production, redirections des anciennes URLs Drupal.
+7. ~~Clés Stripe live~~ — constaté le 2026-10-11 : `.env.prod.local` contient déjà les clés live du compte `acct_1HcYUvFv0PjmdzX7` (« Associationliboke », FR, encaissements et virements actifs), `/nous-soutenir` sert la `pk_live_`, endpoint live déclaré (`checkout.session.completed`, `charge.refunded`, API 2020-08-27). **Reste à valider le `whsec_` par un vrai don de 1 € remboursé ensuite.** Plus tard : redirections des anciennes URLs Drupal.
 
 ## 4 quinquies. Session du 2026-09-26 — e-mails, Stripe, accueil
 
