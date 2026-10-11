@@ -77,7 +77,7 @@ Le 2026-09-25, le paiement est passé en **Embedded Checkout** : don de 10 € p
 
 **Reste à faire avant toute clé live :**
 1. Récupérer les accès du **compte Stripe existant de l'association** — il est en production, ses dons historiques y sont (clé `pk_live_` trouvée dans l'ancien thème, cf. audit §7). Ne pas en créer un nouveau. Vérifier que les clés de test utilisées appartiennent bien à ce compte.
-2. **Remboursement partiel** : `charge.refunded` est aussi émis pour un remboursement partiel, et le code passe alors le don entier en `refunded`. Décider du traitement (ignorer tant que `charge.refunded` ne vaut pas `true`, ou stocker le montant remboursé — nouvelle colonne et migration).
+2. ~~**Remboursement partiel**~~ — *décision du 2026-10-11 : non traité, l'association ne fait pas de remboursement partiel ; tout `charge.refunded` passe le don en `refunded`.* Constat d'origine : `charge.refunded` est aussi émis pour un remboursement partiel, et le code passe alors le don entier en `refunded`. Décider du traitement (ignorer tant que `charge.refunded` ne vaut pas `true`, ou stocker le montant remboursé — nouvelle colonne et migration).
 3. En production : déclarer l'endpoint `https://<hôte>/stripe/webhook` dans le tableau de bord (événements `checkout.session.completed` et `charge.refunded`) et placer son `whsec_` dans l'environnement du serveur.
 
 ---
