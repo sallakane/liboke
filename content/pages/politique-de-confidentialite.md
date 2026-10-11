@@ -5,7 +5,7 @@ seo:
   title: "Politique de confidentialité — Association LIBOKÉ"
   description: "Comment l'association LIBOKÉ collecte et conserve les données personnelles issues du formulaire de contact et des dons, et comment exercer vos droits."
 template: default
-updated: "2026-09-27"
+updated: "2026-10-11"
 ---
 
 L'association LIBOKÉ attache une grande importance à la protection de vos
@@ -48,8 +48,8 @@ utilisée, de façon temporaire, pour limiter l'envoi abusif de messages.
   remerciement, tenir la comptabilité de l'association.
 - **Base légale** : l'exécution de votre demande de don et le respect des
   obligations comptables de l'association.
-- **Durée de conservation** : [À COMPLÉTER] durée à confirmer avec le
-  comptable de l'association, au regard de ses obligations légales.
+- **Durée de conservation** : le temps nécessaire au respect des
+  obligations comptables et fiscales de l'association.
 
 **Aucune donnée de carte bancaire n'est collectée ni conservée par
 l'association.** Vos coordonnées bancaires sont saisies dans un formulaire
@@ -68,8 +68,8 @@ techniques suivants, dans la limite de ce qui est nécessaire à leur mission :
   protection des données UE–États-Unis (*Data Privacy Framework*) et par des
   clauses contractuelles types de la Commission européenne. Voir la
   [politique de confidentialité de Stripe](https://stripe.com/fr/privacy).
-- **Hébergeur du site** : [À COMPLÉTER] raison sociale et pays
-  d'hébergement.
+- **Hébergeur du site** : Hostinger International Ltd, Chypre ; serveur
+  situé dans l'Union européenne (France).
 - **Prestataire d'envoi des courriels** : Google (service Gmail), Google
   Ireland Limited, Irlande.
 
@@ -120,4 +120,4 @@ par mot de passe.
 Cette politique peut être mise à jour, notamment en cas d'évolution du site.
 La date de dernière mise à jour figure ci-dessous.
 
-*Dernière mise à jour : 25 septembre 2026.*
+*Dernière mise à jour : 11 octobre 2026.*

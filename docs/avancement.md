@@ -227,7 +227,8 @@ Source : textes, photos et biographie PDF du fondateur transmis par l'associatio
 - **Photographies** et contenus réels : toutes les pages sont en `[À COMPLÉTER]`. L'image d'accueil actuelle vient de l'ancien programme de bons et ne correspond plus au propos.
 - **Menu** : les six entrées actuelles suivent CLAUDE.md §6, à valider.
 - **Carrousel** d'images et page **Événements** : à conserver ou non.
-- Coordonnées de l'association, mentions légales, hébergeur : toutes les lignes `[À COMPLÉTER]` de `mentions-legales.md` et `politique-de-confidentialite.md` (forme juridique, RNA, siège, directeur de la publication, hébergeur, prestataire d'envoi des courriels, adresse de contact RGPD).
+- **Textes légaux (2026-10-11)** : plus aucun `[À COMPLÉTER]`. Forme juridique (association déclarée, nature 9220) et RNA `W313028337` repris du répertoire Sirene ; hébergeur Hostinger International Ltd (Larnaca, Chypre). Retirés faute d'information : directeur de la publication (**mention obligatoire (LCEN), à rétablir dès que le nom est connu**), crédits photos, durée chiffrée de conservation des dons (remplacée par « le temps nécessaire aux obligations comptables et fiscales »). Page **Partenaires** supprimée.
+- **Siège à vérifier** : Sirene donne comme siège ouvert le SIRET `889 179 131 00020`, 68 B rue Ernest Renan (apt D32), 31200 Toulouse ; le site affiche le SIRET `…00012` et le 115 chemin de Lanusse (établissement fermé ?).
 - Relire la mention de Stripe dans la politique de confidentialité (entité Stripe Payments Europe, transfert vers Stripe, Inc. sous *Data Privacy Framework*) avec la documentation légale Stripe en vigueur.
 
 ### À trancher côté technique
