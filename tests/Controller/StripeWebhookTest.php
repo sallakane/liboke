@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\Entity\Donation;
 use App\Entity\DonationStatus;
 use App\Entity\StripeEvent;
+use App\Message\NotifyDonationReceived;
 use App\Message\SendDonationThanks;
 use App\Repository\DonationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -83,10 +84,12 @@ final class StripeWebhookTest extends WebTestCase
         self::assertSame('awa@example.org', $don->getDonorEmail());
         self::assertNotNull($don->getPaidAt());
 
-        // Le remerciement sort de la requête : le webhook doit répondre vite.
+        // Remerciement et avis à l'association sortent de la requête : le
+        // webhook doit répondre vite.
         $messages = $this->fileAsync($client)->getSent();
-        self::assertCount(1, $messages);
+        self::assertCount(2, $messages);
         self::assertInstanceOf(SendDonationThanks::class, $messages[0]->getMessage());
+        self::assertInstanceOf(NotifyDonationReceived::class, $messages[1]->getMessage());
     }
 
     /**

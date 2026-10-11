@@ -6,6 +6,7 @@ namespace App\Stripe;
 
 use App\Entity\Donation;
 use App\Entity\StripeEvent;
+use App\Message\NotifyDonationReceived;
 use App\Message\SendDonationThanks;
 use App\Repository\DonationRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -111,6 +112,7 @@ final readonly class WebhookHandler
 
         // Aucun envoi synchrone : le webhook doit répondre vite (règle 4).
         $this->bus->dispatch(new SendDonationThanks((string) $donation->getId()));
+        $this->bus->dispatch(new NotifyDonationReceived((string) $donation->getId()));
 
         return WebhookOutcome::Processed;
     }

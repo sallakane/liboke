@@ -1,0 +1,16 @@
+Nouveau don reçu sur le site Liboke
+
+Montant : {{ montant }} {{ donation.currency }}
+Type : don ponctuel
+Donateur : {{ donation.donorName ?? 'non renseigné' }}
+Adresse e-mail : {{ donation.donorEmail ?? 'non renseignée' }}
+Payé le : {{ donation.paidAt|date('d/m/Y à H:i', 'Europe/Paris') }}
+Référence : {{ donation.id }}
+
+Détail des dons : {{ lien_admin }}
+
+---
+
+Le paiement a été confirmé par Stripe.{% if donation.donorEmail %} Répondre à ce courriel écrit
+directement au donateur, qui a déjà reçu un message de remerciement.{% endif %}
+

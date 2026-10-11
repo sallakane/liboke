@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family: Helvetica, Arial, sans-serif; color: #333;">
+    <h1 style="color: #006952; font-size: 18px;">Nouveau don reçu sur le site Liboke</h1>
+
+    <p><strong>Montant :</strong> {{ montant }}&nbsp;{{ donation.currency }}</p>
+    <p><strong>Type :</strong> don ponctuel</p>
+    <p><strong>Donateur :</strong> {{ donation.donorName ?? 'non renseigné' }}</p>
+    <p><strong>Adresse e-mail :</strong> {{ donation.donorEmail ?? 'non renseignée' }}</p>
+    <p><strong>Payé le :</strong> {{ donation.paidAt|date('d/m/Y à H:i', 'Europe/Paris') }}</p>
+    <p><strong>Référence :</strong> {{ donation.id }}</p>
+
+    <p><a href="{{ lien_admin }}" style="color: #006952;">Voir les dons dans l'espace d'administration</a></p>
+
+    <hr style="border: 0; border-top: 1px solid #ccc;">
+
+    <p style="font-size: 12px; color: #666;">
+        Le paiement a été confirmé par Stripe.
+        {% if donation.donorEmail %}
+            Répondre à ce courriel écrit directement au donateur, qui a déjà reçu un message de remerciement.
+        {% endif %}
+    </p>
+</body>
+</html>

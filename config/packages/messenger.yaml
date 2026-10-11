@@ -17,6 +17,7 @@ framework:
             # même le rendu du gabarit de remerciement sort de la requête
             # (CLAUDE.md §10, règle 4).
             App\Message\SendDonationThanks: async
+            App\Message\NotifyDonationReceived: async
 
 when@test:
     framework:
