@@ -154,7 +154,7 @@ En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0
 3. ~~Webhook Stripe (mode test)~~ — fait le 2026-09-26 (voir §4 quinquies).
 4. **E-mails** : envoi provisoire par Gmail (voir §4 quinquies). À terme : SMTP du domaine (ou Brevo) avec SPF/DKIM/DMARC et un expéditeur `@association-liboke.org`.
 5. **Copie des sauvegardes hors du VPS** : destination à décider.
-6. **Ouverture au public** : retirer le `basic_auth`, puis `SITE_INDEXABLE=1` quand le contenu réel est en ligne (phase 8b).
+6. ~~Ouverture au public~~ — fait le 2026-10-11 : `basic_auth` retiré du Caddyfile de l'hôte, `SITE_INDEXABLE=1`.
 7. Plus tard : clés Stripe **live** et endpoint de production, redirections des anciennes URLs Drupal.
 
 ## 4 quinquies. Session du 2026-09-26 — e-mails, Stripe, accueil
