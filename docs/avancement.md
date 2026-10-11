@@ -47,7 +47,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, en production sur clés live** depuis le 2026-10-11 (remboursement partiel hors périmètre) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
-| 8b | Intégration du contenu réel, audit final | **Contenu intégré le 2026-09-27** (§4 sexies) ; restent Partenaires, mentions légales, `make audit` |
+| 8b | Intégration du contenu réel, audit final | **Contenu intégré le 2026-09-27** (§4 sexies), textes légaux complétés et page Partenaires supprimée le 2026-10-11 ; reste `make audit` sur le contenu réel |
 | 9 | Préparation production, sauvegardes | **Déployée sur le VPS le 2026-09-25** (site fermé par mot de passe, clés Stripe de test à poser) — voir §4 quater |
 
 **Volume actuel** : 52 classes PHP, 21 fichiers de test (134 tests), 28 gabarits Twig, 3 migrations, 8 pages de contenu, 922 lignes de CSS.
@@ -242,6 +242,6 @@ Source : textes, photos et biographie PDF du fondateur transmis par l'associatio
 ## 7. Prochaine étape
 
 1. **Stripe** (§3) : en production sur clés live, premier don reçu le 2026-10-11. Remboursement validé en mode test seulement, pas de test en live ; remboursement partiel hors périmètre.
-2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
-3. **Phase 8b**, dès réception du contenu : déposer les photos dans `assets/images/` (ou `assets/images/contenu/` pour le Markdown), `make images`, écrire les textes et les `alt`, puis `make audit`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
-4. **Finir la mise en production** : liste « Reste à faire sur la production » du §4 quater (compte admin, clés et webhook Stripe de test, SMTP, sauvegardes hors VPS, ouverture au public).
+2. ~~Textes légaux~~ — complétés le 2026-10-11, avant l'ouverture (§6). Crédits photos et durée chiffrée de conservation des dons à ajouter si l'association les fournit.
+3. **Phase 8b** : contenu intégré ; reste à lancer `make audit` sur le contenu réel (le dernier audit Lighthouse date du 2026-09-25, avant intégration). Nouvelles photos : `assets/images/` (ou `assets/images/contenu/` pour le Markdown), puis `make images`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
+4. **Production** : site ouvert au public le 2026-10-11 (§4 quater). Restent le SMTP du domaine (SPF/DKIM/DMARC) et la copie des sauvegardes hors VPS, puis les redirections des anciennes URLs Drupal.
