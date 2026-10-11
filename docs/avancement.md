@@ -44,7 +44,7 @@ ADMIN_PASSWORD_HASH='$2y$13$…'   # apostrophes simples : le hash contient des 
 | 3 | Couche contenu (Markdown + front matter), menu dynamique | **Livrée** |
 | 4 | SEO complet : canoniques, JSON-LD, sitemap, robots, 301, pages d'erreur | **Livrée** |
 | 5 | Formulaire de contact, anti-spam, purge RGPD | **Livrée** |
-| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, validée en mode test** (remboursement partiel à traiter) |
+| 6 | Dons Stripe : Checkout, webhook signé et idempotent, remerciements | **Livrée, en production sur clés live** depuis le 2026-10-11 (remboursement partiel hors périmètre) |
 | 7 | Espace admin, purge planifiée, pages légales | **Livrée**, textes légaux à compléter par l'association (`[À COMPLÉTER]`) |
 | 8a | Performance et accessibilité, partie structurelle | **Livrée** : 99-100 partout au Lighthouse mobile, sur build de prod |
 | 8b | Intégration du contenu réel, audit final | **Contenu intégré le 2026-09-27** (§4 sexies) ; restent Partenaires, mentions légales, `make audit` |
@@ -149,13 +149,13 @@ En ligne sur `https://association-liboke.org` (projet Compose `liboke`, `127.0.0
 
 ### Reste à faire sur la production
 
-1. ~~Compte admin~~ — fait le 2026-10-11 : mot de passe défini par le développeur (hash bcrypt dans `.env.prod.local`, entre apostrophes), connexion vérifiée. Don live de 5 € du 2026-10-11 : webhook accepté (200), `whsec_` validé ; remboursement à tester.
+1. ~~Compte admin~~ — fait le 2026-10-11 : mot de passe défini par le développeur (hash bcrypt dans `.env.prod.local`, entre apostrophes), connexion vérifiée. Don live de 5 € du 2026-10-11 : webhook accepté (200), `whsec_` validé. Test de remboursement en live abandonné (décision du 2026-10-11) : le traitement de `charge.refunded` reste validé en mode test uniquement.
 2. ~~Clés Stripe de test~~ — fait.
 3. ~~Webhook Stripe (mode test)~~ — fait le 2026-09-26 (voir §4 quinquies).
 4. **E-mails** : envoi provisoire par Gmail (voir §4 quinquies). À terme : SMTP du domaine (ou Brevo) avec SPF/DKIM/DMARC et un expéditeur `@association-liboke.org`.
 5. **Copie des sauvegardes hors du VPS** : destination à décider.
 6. ~~Ouverture au public~~ — fait le 2026-10-11 : `basic_auth` retiré du Caddyfile de l'hôte, `SITE_INDEXABLE=1`.
-7. ~~Clés Stripe live~~ — constaté le 2026-10-11 : `.env.prod.local` contient déjà les clés live du compte `acct_1HcYUvFv0PjmdzX7` (« Associationliboke », FR, encaissements et virements actifs), `/nous-soutenir` sert la `pk_live_`, endpoint live déclaré (`checkout.session.completed`, `charge.refunded`, API 2020-08-27). **Reste à valider le `whsec_` par un vrai don de 1 € remboursé ensuite.** Plus tard : redirections des anciennes URLs Drupal.
+7. ~~Clés Stripe live~~ — constaté le 2026-10-11 : `.env.prod.local` contient déjà les clés live du compte `acct_1HcYUvFv0PjmdzX7` (« Associationliboke », FR, encaissements et virements actifs), `/nous-soutenir` sert la `pk_live_`, endpoint live déclaré (`checkout.session.completed`, `charge.refunded`, API 2020-08-27). `whsec_` validé par le don live du 2026-10-11 (point 1). Plus tard : redirections des anciennes URLs Drupal.
 
 ## 4 quinquies. Session du 2026-09-26 — e-mails, Stripe, accueil
 
@@ -241,7 +241,7 @@ Source : textes, photos et biographie PDF du fondateur transmis par l'associatio
 
 ## 7. Prochaine étape
 
-1. **Stripe** (§3) : parcours de don et remboursement complet validés en mode test ; restent le remboursement partiel et le branchement du compte de production.
+1. **Stripe** (§3) : en production sur clés live, premier don reçu le 2026-10-11. Remboursement validé en mode test seulement, pas de test en live ; remboursement partiel hors périmètre.
 2. **Faire compléter les textes légaux** par l'association : ils doivent être définitifs **avant** la mise en ligne des dons (CLAUDE.md §11).
 3. **Phase 8b**, dès réception du contenu : déposer les photos dans `assets/images/` (ou `assets/images/contenu/` pour le Markdown), `make images`, écrire les textes et les `alt`, puis `make audit`. Remplacer `logo.svg` (69 Ko de bitmaps) si l'association fournit un vrai vectoriel.
 4. **Finir la mise en production** : liste « Reste à faire sur la production » du §4 quater (compte admin, clés et webhook Stripe de test, SMTP, sauvegardes hors VPS, ouverture au public).
