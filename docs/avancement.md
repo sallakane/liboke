@@ -228,7 +228,7 @@ Source : textes, photos et biographie PDF du fondateur transmis par l'associatio
 - **Menu** : les six entrées actuelles suivent CLAUDE.md §6, à valider.
 - **Carrousel** d'images et page **Événements** : à conserver ou non.
 - **Textes légaux (2026-10-11)** : plus aucun `[À COMPLÉTER]`. Forme juridique (association déclarée, nature 9220) et RNA `W313028337` repris du répertoire Sirene ; hébergeur Hostinger International Ltd (Larnaca, Chypre). Directeur de la publication : Landry Milingo (fondateur et président). Retirés faute d'information : crédits photos, durée chiffrée de conservation des dons (remplacée par « le temps nécessaire aux obligations comptables et fiscales »). Page **Partenaires** supprimée.
-- **Siège à vérifier** : Sirene donne comme siège ouvert le SIRET `889 179 131 00020`, 68 B rue Ernest Renan (apt D32), 31200 Toulouse ; le site affiche le SIRET `…00012` et le 115 chemin de Lanusse (établissement fermé ?).
+- **Siège** : le site garde le 115 chemin de Lanusse et le SIRET `…00012`, sur décision du développeur (2026-10-11), bien que Sirene donne comme siège ouvert le `…00020`, 68 B rue Ernest Renan.
 - Relire la mention de Stripe dans la politique de confidentialité (entité Stripe Payments Europe, transfert vers Stripe, Inc. sous *Data Privacy Framework*) avec la documentation légale Stripe en vigueur.
 
 ### À trancher côté technique
