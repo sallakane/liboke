@@ -20,7 +20,7 @@ Le site association-liboke.org est édité par l'**association LIBOKÉ**.
 
 ## Directeur de la publication
 
-Landry Milingo, fondateur de l'association LIBOKÉ.
+Landry Milingo, fondateur et président de l'association LIBOKÉ.
 
 ## Hébergeur
 
