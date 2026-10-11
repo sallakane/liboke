@@ -18,6 +18,10 @@ Le site association-liboke.org est édité par l'**association LIBOKÉ**.
 - Siège social : 115 chemin de Lanusse, 31200 Toulouse, France
 - Adresse électronique : [association.liboke@gmail.com](mailto:association.liboke@gmail.com)
 
+## Directeur de la publication
+
+Landry Milingo, fondateur de l'association LIBOKÉ.
+
 ## Hébergeur
 
 Le site est hébergé par :
